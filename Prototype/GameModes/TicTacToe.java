@@ -54,7 +54,15 @@ public class TicTacToe implements Game {
         return false;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
 
+    @Override
+    public String getCurrentPlayer() {
+        return playerTurn.getUsername();
+    }
 
     @Override
     public void setPlayer1(Player player1) {

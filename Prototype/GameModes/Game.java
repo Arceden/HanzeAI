@@ -21,4 +21,7 @@ public interface Game {
     /** Place the player in the game */
     public void setPlayer1(Player player1);
     public void setPlayer2(Player player2);
+
+    public String getName();
+    public String getCurrentPlayer();
 }
