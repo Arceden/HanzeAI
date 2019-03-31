@@ -1,12 +1,12 @@
+import Algorithms.*;
+import GameModes.*;
+import Players.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
-import java.io.*;
-import java.net.Socket;
 
 public class Main extends Application {
 
@@ -28,11 +28,31 @@ public class Main extends Application {
         primaryStage.show();
 
 
-        //Handle the server connection
-        ServerConnection server = new ServerConnection("localhost", 7789);
-        server.connect();
-        server.send("login arnold");
+        /**
+         * Test the players and the game
+         */
 
+        Player arnold = new InputPlayer("Arnolditto");
+        Player system = new AIPlayer("System", new Minimax());
+        Game game = new TicTacToe(arnold, system);
+
+        new Thread(()->{
+            game.start();
+
+            while (!game.hasEnded()){
+                int move = game.getNextMove();
+                game.move(move);
+            }
+        }).start();
+
+
+
+
+        //Handle the server connection
+//        ServerConnection server = new ServerConnection("localhost", 7789);
+//        server.connect();
+//
+//        System.out.println(server.isConnected());
 
     }
 }

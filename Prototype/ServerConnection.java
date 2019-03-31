@@ -40,4 +40,19 @@ public class ServerConnection {
         }
     }
 
+    String read(){
+        try {
+            return fromServer.readUTF();
+        } catch (IOException ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    boolean isConnected(){
+        if(!socket.isConnected()) return false;
+        // try to send and receive a message
+        return true;
+    }
+
 }
