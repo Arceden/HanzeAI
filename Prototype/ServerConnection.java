@@ -7,7 +7,7 @@ public class ServerConnection {
     private String address;
 
     private Socket socket;
-    private DataInputStream fromServer;
+    private BufferedReader fromServer;
     private DataOutputStream toServer;
 
     ServerConnection(String address, int port){
@@ -22,8 +22,7 @@ public class ServerConnection {
             socket = new Socket(address, port);
 
             //Init the data streams
-            fromServer = new DataInputStream(socket.getInputStream());
-//            fromServer = new ObjectInputStream(socket.getInputStream());
+            fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             toServer = new DataOutputStream(socket.getOutputStream());
         } catch (IOException ex){
             ex.printStackTrace();
@@ -36,7 +35,16 @@ public class ServerConnection {
 
             while(socket.isConnected()) {
                 try {
-                    System.out.println(fromServer.readUTF());
+                    String message = fromServer.readLine();
+
+                    String[] args = message.split(" ");
+                    switch (args[0]){
+                        case "OK": serverLogger("ok", message); break;
+                        case "ERR": serverLogger("ERROR", message); break;
+                        case "SVR": serverLogger("Server", message); break;
+                        default: serverLogger("?", message);
+                    }
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -47,25 +55,29 @@ public class ServerConnection {
         }).start();
     }
 
+    private void serverLogger(String prefix, String message){
+        System.out.println("[Server "+prefix+"]\t\t"+message);
+    }
+
     void login(String username){
         send("login "+username);
     }
 
+    void getGameList() {
+        send("get gamelist");
+    }
+
+    void getPlayerList(){
+        send("get playerlist");
+    }
+
     void send(String message){
         try {
-            toServer.writeUTF(message+"\n");
+            System.out.println("[SERVER to]\t"+message);
+            toServer.writeUTF(message+"\n\r");
             toServer.flush();
         } catch (IOException ex){
             ex.printStackTrace();
-        }
-    }
-
-    String read(){
-        try {
-            return fromServer.readUTF();
-        } catch (IOException ex){
-            ex.printStackTrace();
-            return null;
         }
     }
 
