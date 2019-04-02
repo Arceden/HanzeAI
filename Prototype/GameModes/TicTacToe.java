@@ -1,10 +1,11 @@
 package GameModes;
 
+import Network.Observer;
 import Players.Player;
 
 import java.util.Random;
 
-public class TicTacToe implements Game {
+public class TicTacToe implements Game, Observer {
 
     private Player player1;
     private Player player2;
@@ -72,5 +73,11 @@ public class TicTacToe implements Game {
     @Override
     public void setPlayer2(Player player2) {
         this.player2 = player2;
+    }
+
+    @Override
+    public void update(String message) {
+        //Handle server observations
+        System.err.println("[TicTacToe] "+message);
     }
 }

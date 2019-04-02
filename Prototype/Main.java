@@ -1,5 +1,8 @@
 import Algorithms.*;
 import GameModes.*;
+import Network.ConnectionHandler;
+import Network.Logger;
+import Network.Observer;
 import Players.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,30 +21,54 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         BorderPane mainPane = new BorderPane();
-        GridPane menuPane = new GridPane();
+//        GridPane menuPane = new GridPane();
         taLog = new TextArea();
-        lStatus = new Label();
+//        lStatus = new Label();
+//
+//        mainPane.setRight(taLog);
+//        mainPane.setBottom(lStatus);
+//        mainPane.setCenter(menuPane);
 
-        mainPane.setRight(taLog);
-        mainPane.setBottom(lStatus);
+        GridPane menuPane = new GridPane();
+        Button bLocal = new Button("Local Game");
+        Button bOnline = new Button("Online");
+        TextField tfUsername = new TextField("Arnold");
+
+        menuPane.add(new Label("Username"), 0, 0);
+        menuPane.add(tfUsername, 1, 0);
+        menuPane.add(bLocal, 1, 1);
+        menuPane.add(bOnline, 2, 1);
+
         mainPane.setCenter(menuPane);
 
+        Game game=null;
+        Logger logger = new Logger(taLog);
+        ConnectionHandler server = new ConnectionHandler();
+
+        game = new TicTacToe(new InputPlayer("Arnold"), new AIPlayer("Comput0r", new Minimax()));
+
+        //Register observers to the server
+        server.registerObserver(logger);
+        server.registerObserver((Observer) game);
+
+        bOnline.setOnAction(e->{
+            //Start the server connection
+            server.connect("localhost", 7789);
+            server.listen();
+
+            server.send("login "+tfUsername.getText());
+            server.send("get playerlist");
+            server.send("get gamelist");
+
+            mainPane.setCenter(taLog);
+        });
+
         //Create a scene and place it in the stage
-//        Scene scene = new Scene(mainPane);
-//        primaryStage.setScene(scene);
-//        primaryStage.setTitle("Game Client");
-//        primaryStage.show();
-
-
-        //Handle the server connection
-        ServerConnection server = new ServerConnection("localhost", 7789);
-        server.connect();
-        server.listen();
-
-        server.login("Arnold");
-        server.getGameList();
-        server.getPlayerList();
-        server.send("subscribe Tic-tac-toe");
+        Scene scene = new Scene(mainPane);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Game Client");
+        primaryStage.show();
 
     }
+
 }
