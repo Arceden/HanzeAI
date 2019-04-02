@@ -4,6 +4,8 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * The ConnectionHandler is using the ObserverPattern.
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 public class ConnectionHandler implements ServerSubject {
 
     private ArrayList<Observer> observers;
+    private Queue<String> outgoing = new LinkedList<>();
+    private Queue<String> incomming = new LinkedList<>();
 
     private int port;
     private String address;
@@ -48,10 +52,12 @@ public class ConnectionHandler implements ServerSubject {
 
     /*
      *  Connection Handling
+     *  Send the message to the server and wait for a response.
+     *  Do not send another command until the previous command has been acknowledged
      */
-
     public void send(String message){
-        toServer.println(message);
+        outgoing.add(message);
+        toServer.println(outgoing.remove());
         toServer.flush();
     }
 
@@ -62,6 +68,14 @@ public class ConnectionHandler implements ServerSubject {
                 while (true) {
                     String message = fromServer.readLine();
                     String[] args = message.split(" ");
+
+                    switch (args[0]){
+                        case "OK":  incomming.add(message); break;
+                        case "ERR": incomming.add(message); break;
+                        default:
+                            notifyObservers(message);
+
+                    }
 
                     notifyObservers(message);
                 }
