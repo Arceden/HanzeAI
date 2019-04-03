@@ -22,7 +22,6 @@ public class Main extends Application {
          * Setting MVC components
          *
          * */
-
         TicTacToeView ticTacToeView = new TicTacToeView();
         TicTacToe ticTacToeModel = new TicTacToe();
         TicTacToeController ticTacToeController = new TicTacToeController(ticTacToeModel, ticTacToeView);
