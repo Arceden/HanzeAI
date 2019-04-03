@@ -1,6 +1,8 @@
 package GameModes;
 
 import Players.Player;
+import java.awt.*;
+import java.awt.event.*;
 
 import java.util.Random;
 
@@ -9,9 +11,10 @@ public class TicTacToe implements Game {
     private Player player1;
     private Player player2;
     public Player playerTurn;
+    private String testValue;
 
     public final String name = "TicTacToe";
-    private final int[] cells = new int[9];
+    private int[][] cells = new int[3][3];
 
     public TicTacToe(Player player1, Player player2){
         this.player1 = player1;
@@ -23,7 +26,8 @@ public class TicTacToe implements Game {
     @Override
     public void start() {
         Random random = new Random();
-        switch (random.nextInt(1)){
+        switch (random.nextInt(1))
+        {
             case 0: playerTurn = player1; break;
             case 1: playerTurn = player2; break;
         }
@@ -72,5 +76,41 @@ public class TicTacToe implements Game {
     @Override
     public void setPlayer2(Player player2) {
         this.player2 = player2;
+    }
+
+    @Override
+    public String getCurrentStatus()
+    {
+        return "";
+    }
+
+
+//    public boolean isFull()
+//    {
+//        for(int i = 0; i < 3; i++)
+//        {
+//            for(int j = 0; j < 3; j++)
+//            {
+//                if(cells[i][j].getToken() == " ");
+//                {
+//                    return false;
+//                }
+//                else
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//    }
+
+
+    public void setTest(String value)
+    {
+        this.testValue = value;
+    }
+
+    public String getTest()
+    {
+        return this.testValue;
     }
 }

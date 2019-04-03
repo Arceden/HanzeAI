@@ -24,4 +24,5 @@ public interface Game {
 
     public String getName();
     public String getCurrentPlayer();
+    public String getCurrentStatus();
 }

@@ -1,6 +1,8 @@
 import Algorithms.*;
+import Controllers.TicTacToeController;
 import GameModes.*;
 import Players.*;
+import Views.TicTacToeView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -15,6 +17,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        /**
+         * Setting MVC components
+         *
+         * */
+
+        TicTacToeView ticTacToeView = new TicTacToeView();
+        TicTacToe ticTacToeModel = new TicTacToe();
+        TicTacToeController ticTacToeController = new TicTacToeController(ticTacToeModel, ticTacToeView);
+        ticTacToeController.setTestValue();
+
 
         BorderPane mainPane = new BorderPane();
         GridPane gamePane = new GridPane();
