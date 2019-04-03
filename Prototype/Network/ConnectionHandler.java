@@ -2,6 +2,7 @@ package Network;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,9 +41,16 @@ public class ConnectionHandler implements ServerSubject {
             fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             toServer = new PrintWriter(socket.getOutputStream());
 
+            messageEmitter();
+            listen();
+
             return true;
 
-        } catch (IOException ex){
+        } catch (ConnectException ex){
+            System.err.println(ex.getMessage());
+            return false;
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
 
@@ -52,17 +60,46 @@ public class ConnectionHandler implements ServerSubject {
 
     /*
      *  Connection Handling
-     *  Send the message to the server and wait for a response.
-     *  Do not send another command until the previous command has been acknowledged
+     *  Add the message to the outgoing queue
      */
     public void send(String message){
         outgoing.add(message);
-        toServer.println(outgoing.remove());
-        toServer.flush();
+    }
+
+    /**
+     *  Emit the message to the server and wait for a response.
+     *  Do not send another command until the previous command has been acknowledged
+     */
+    private void messageEmitter(){
+        new Thread(()->{
+            try {
+                while (true){
+                    //If there are any outgoing messages in the queue
+                    if(outgoing.size()>0){
+                        String message = outgoing.remove();
+                        toServer.println(message);
+                        toServer.flush();
+
+
+
+                        while (incomming.size()==0){
+                            Thread.sleep(50);
+                        }
+
+                        System.out.println(message+" - "+incomming.remove());
+                    } else {
+                        //Dont push it too hard. The outgoing queue size function needs its time to think
+                        Thread.sleep(50);
+                    }
+                }
+            } catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+        }).start();
     }
 
     /** Listen for new messages and update all observers with the new message */
-    public void listen(){
+    private void listen(){
         new Thread(()->{
             try {
                 while (true) {
@@ -73,12 +110,16 @@ public class ConnectionHandler implements ServerSubject {
                         case "OK":  incomming.add(message); break;
                         case "ERR": incomming.add(message); break;
                         default:
-                            notifyObservers(message);
-
+                            break;
                     }
 
                     notifyObservers(message);
+
                 }
+            } catch (NullPointerException ex){
+                //Connection lost?
+                Thread.currentThread().interrupt();
+                System.err.println("Connection lost!");
             } catch (IOException ex){
                 ex.printStackTrace();
             }

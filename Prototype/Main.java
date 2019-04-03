@@ -54,7 +54,6 @@ public class Main extends Application {
         bOnline.setOnAction(e->{
             //Start the server connection
             server.connect("localhost", 7789);
-            server.listen();
 
             server.send("login "+tfUsername.getText());
             server.send("get playerlist");
