@@ -1,19 +1,23 @@
 import Algorithms.*;
 import Controllers.TicTacToeController;
 import GameModes.*;
+import Network.ConnectionHandler;
+import Network.Logger;
+import Network.Observer;
 import Players.*;
 import Views.TicTacToeView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+
+    TextArea taLog;
+    Label lStatus;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -30,13 +34,46 @@ public class Main extends Application {
 
 
         BorderPane mainPane = new BorderPane();
-        GridPane gamePane = new GridPane();
-        TextArea taLog = new TextArea();
-        Label lStatus = new Label();
+//        GridPane menuPane = new GridPane();
+        taLog = new TextArea();
+//        lStatus = new Label();
+//
+//        mainPane.setRight(taLog);
+//        mainPane.setBottom(lStatus);
+//        mainPane.setCenter(menuPane);
 
-        mainPane.setRight(taLog);
-        mainPane.setBottom(lStatus);
-        mainPane.setCenter(gamePane);
+        GridPane menuPane = new GridPane();
+        Button bLocal = new Button("Local Game");
+        Button bOnline = new Button("Online");
+        TextField tfUsername = new TextField("Arnold");
+
+        menuPane.add(new Label("Username"), 0, 0);
+        menuPane.add(tfUsername, 1, 0);
+        menuPane.add(bLocal, 1, 1);
+        menuPane.add(bOnline, 2, 1);
+
+        mainPane.setCenter(menuPane);
+
+        Game game=null;
+        Logger logger = new Logger(taLog);
+        ConnectionHandler server = new ConnectionHandler();
+
+        game = new TicTacToe(new InputPlayer("Arnold"), new AIPlayer("Comput0r", new Minimax()));
+
+        //Register observers to the server
+        server.registerObserver(logger);
+        server.registerObserver((Observer) game);
+
+        bOnline.setOnAction(e->{
+            //Start the server connection
+            server.connect("localhost", 7789);
+
+            server.send("login "+tfUsername.getText());
+            server.send("get playerlist");
+            server.send("get gamelist");
+
+            mainPane.setCenter(taLog);
+        });
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(mainPane);
@@ -44,45 +81,6 @@ public class Main extends Application {
         primaryStage.setTitle("Game Client");
         primaryStage.show();
 
-
-        /**
-         * Test the players and the game
-         */
-
-        //Create buttons for game
-        for(int i=1;i<4;i++)
-            for(int x=1;x<4;x++)
-                gamePane.add(new Button(""+(x+(i))), i, x);
-
-        //Create game and players
-        Player arnold = new InputPlayer("Arnolditto");
-        Player system = new AIPlayer("System", new Minimax());
-        Game game = new TicTacToe(arnold, system);
-
-        Platform.runLater(() -> {
-            taLog.appendText("New player added: "+arnold.getUsername()+"\n");
-            taLog.appendText("New player added: "+system.getUsername()+"\n");
-            taLog.appendText("Game selected: "+game.getName()+"\n");
-        });
-
-        new Thread(()->{
-            game.start();
-
-            while (!game.hasEnded()){
-                Platform.runLater(()-> lStatus.setText(game.getCurrentPlayer()+"'s turn!"));
-                int move = game.getNextMove();
-                game.move(move);
-            }
-        }).start();
-
-
-
-
-        //Handle the server connection
-//        ServerConnection server = new ServerConnection("localhost", 7789);
-//        server.connect();
-//
-//        System.out.println(server.isConnected());
-
     }
+
 }
