@@ -110,7 +110,7 @@ public class LobbyController extends ViewSubject implements Observer {
      */
     private void startMatch(String message){
         String opponentName;
-        //Find a way to read the string propperly
+        System.out.println(message);
 
         //Change the gameManager state to InMatchState
         gameManager.matchStart();
@@ -124,6 +124,18 @@ public class LobbyController extends ViewSubject implements Observer {
         challengerList.add(args[4].substring(1, args[4].length()-2)+"%"+args[6].substring(1, args[6].length()-2));
     }
 
+    /* TODO: Remove the challenger who left from the list */
+    private void challengerCancellled(String message){
+
+    }
+
+    /**
+     * Receive server messages
+     * Tasks:
+     *  Manage incoming challenges
+     *  Manage canceled challenges
+     *  Receive start match details
+     */
     @Override
     public void update(String message) {
         //Receive challenges and such

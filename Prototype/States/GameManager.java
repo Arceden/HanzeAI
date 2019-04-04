@@ -10,28 +10,26 @@ import javafx.application.Platform;
 public class GameManager implements GameManagerState {
 
     //Define all states
-    GameManagerState startState;
     GameManagerState hasConnectedState;
     GameManagerState inLobbyState;
     GameManagerState inMatchState;
+    GameManagerState startState;
 
     //Set the current state
     GameManagerState state;
 
     //Connection Management
     public ConnectionHandler server;
-
-    //Player data
     String username;
     Player player;
     Game game;
 
     //Constructor
     public GameManager(){
-        startState = new StartState(this);
         hasConnectedState = new HasConnectedState(this);
         inLobbyState = new InLobbyState(this);
         inMatchState = new InMatchState(this);
+        startState = new StartState(this);
 
         setState(getStartState());
     }
@@ -44,20 +42,17 @@ public class GameManager implements GameManagerState {
         this.username = username;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     /**
      * State functions
      */
-    void setState(GameManagerState state){
-        this.state=state;
-    }
 
     public boolean connect(String address, int port) {
         return state.connect(address, port);
@@ -65,6 +60,14 @@ public class GameManager implements GameManagerState {
 
     public boolean login(String username) {
         return state.login(username);
+    }
+
+    void setState(GameManagerState state){
+        this.state=state;
+    }
+
+    public void subscribeToGame() {
+        state.subscribeToGame();
     }
 
     public void disconnect() {
@@ -75,15 +78,7 @@ public class GameManager implements GameManagerState {
         state.matchStart();
     }
 
-    public void subscribeToGame() {
-        state.subscribeToGame();
-    }
-
     /** State Getters */
-    public GameManagerState getStartState() {
-        return startState;
-    }
-
     public GameManagerState getHasConnectedState() {
         return hasConnectedState;
     }
@@ -94,5 +89,9 @@ public class GameManager implements GameManagerState {
 
     public GameManagerState getInMatchState() {
         return inMatchState;
+    }
+
+    public GameManagerState getStartState() {
+        return startState;
     }
 }
