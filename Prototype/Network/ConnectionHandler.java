@@ -11,6 +11,7 @@ import java.util.Queue;
 /**
  * The ConnectionHandler is using the ObserverPattern.
  * The game subscribes for all game related messages upon first login until the player has logged out
+ * TODO: Return boolean on the send() method. True if server returns OK, False if server returns ERR <message>
  */
 public class ConnectionHandler implements ServerSubject {
 
@@ -80,12 +81,11 @@ public class ConnectionHandler implements ServerSubject {
                         toServer.println(message);
                         toServer.flush();
 
-
-
                         while (incomming.size()==0){
                             Thread.sleep(50);
                         }
 
+                        //Return the message to the send method somehow
                         System.out.println(message+" - "+incomming.remove());
                     } else {
                         //Dont push it too hard. The outgoing queue size function needs its time to think
@@ -110,10 +110,9 @@ public class ConnectionHandler implements ServerSubject {
                         case "OK":  incomming.add(message); break;
                         case "ERR": incomming.add(message); break;
                         default:
+                            notifyObservers(message);
                             break;
                     }
-
-                    notifyObservers(message);
 
                 }
             } catch (NullPointerException ex){
