@@ -1,6 +1,5 @@
 package States;
 
-import Network.Observer;
 import javafx.scene.Scene;
 
 public class InLobbyState implements GameManagerState {
@@ -12,13 +11,15 @@ public class InLobbyState implements GameManagerState {
     }
 
     @Override
-    public void connect(String address, int port) {
+    public boolean connect(String address, int port) {
         System.err.println("Invalid event");
+        return false;
     }
 
     @Override
-    public void login(String username) {
+    public boolean login(String username) {
         System.err.println("Invalid event");
+        return false;
     }
 
     @Override

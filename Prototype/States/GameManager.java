@@ -1,8 +1,6 @@
 package States;
 
 import Network.ConnectionHandler;
-import Network.Observer;
-import javafx.scene.Scene;
 
 public class GameManager implements GameManagerState {
 
@@ -18,6 +16,9 @@ public class GameManager implements GameManagerState {
     //Connection Management
     public ConnectionHandler server;
 
+    //Player data
+    String username;
+
     //Constructor
     public GameManager(){
         startState = new StartState(this);
@@ -26,20 +27,33 @@ public class GameManager implements GameManagerState {
         inMatchState = new InMatchState(this);
 
         setState(getStartState());
-
-        server = new ConnectionHandler();
     }
 
+    public void setServer(ConnectionHandler server) {
+        this.server = server;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * State functions
+     */
     void setState(GameManagerState state){
         this.state=state;
     }
 
-    public void connect(String address, int port) {
-        state.connect(address, port);
+    public boolean connect(String address, int port) {
+        return state.connect(address, port);
     }
 
-    public void login(String username) {
-        state.login(username);
+    public boolean login(String username) {
+        return state.login(username);
     }
 
     public void disconnect() {

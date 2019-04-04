@@ -15,19 +15,22 @@ public class StartState implements GameManagerState {
     }
 
     @Override
-    public void connect(String address, int port) {
+    public boolean connect(String address, int port) {
         System.out.println("Connecting to server..");
         if(gameManager.server.connect(address, port)){
             System.out.println("Connection successful");
             gameManager.setState(gameManager.getHasConnectedState());
         } else {
             System.out.println("Connection failed");
+            return false;
         }
+        return true;
     }
 
     @Override
-    public void login(String username) {
+    public boolean login(String username) {
         System.err.println("Invalid event");
+        return false;
     }
 
     @Override

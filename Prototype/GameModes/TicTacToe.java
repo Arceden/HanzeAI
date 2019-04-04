@@ -2,8 +2,6 @@ package GameModes;
 
 import Network.Observer;
 import Players.Player;
-import java.awt.*;
-import java.awt.event.*;
 
 import java.util.Random;
 

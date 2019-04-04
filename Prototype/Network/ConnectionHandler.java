@@ -1,7 +1,6 @@
 package Network;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.Queue;
  * The game subscribes for all game related messages upon first login until the player has logged out
  * TODO: Return boolean on the send() method. True if server returns OK, False if server returns ERR <message>
  */
-public class ConnectionHandler implements ServerSubject {
+public class ConnectionHandler implements Subject {
 
     private ArrayList<Observer> observers;
     private Queue<String> outgoing = new LinkedList<>();
@@ -45,10 +44,12 @@ public class ConnectionHandler implements ServerSubject {
             messageEmitter();
             listen();
 
+            notifyObservers("STATUS Stable Connection");
             return true;
 
         } catch (ConnectException ex){
             System.err.println(ex.getMessage());
+            notifyObservers("STATUS "+ex.getMessage());
             return false;
         }
         catch (IOException ex) {
@@ -119,6 +120,7 @@ public class ConnectionHandler implements ServerSubject {
                 //Connection lost?
                 Thread.currentThread().interrupt();
                 System.err.println("Connection lost!");
+                notifyObservers("STATUS Connection lost");
             } catch (IOException ex){
                 ex.printStackTrace();
             }

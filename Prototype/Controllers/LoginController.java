@@ -1,28 +1,47 @@
 package Controllers;
 
-import Models.PlayerData;
+import States.GameManager;
+import Views.ViewSubject;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class LoginController {
+public class LoginController extends ViewSubject {
 
-    PlayerData playerData;
+    GameManager gameManager;
 
     @FXML
     private TextField tfAddress;
     @FXML
     private TextField tfPort;
+    @FXML
+    private TextField tfUsername;
+    @FXML
+    private Button bLogin;
 
-    public void setPlayerData(PlayerData playerData) {
-        this.playerData = playerData;
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 
     @FXML
     void connect(){
-        playerData.setServerAddress(tfAddress.getText());
-        playerData.setServerPort(Integer.parseInt(tfPort.getText()));
+        String address = tfAddress.getText();
+        int port = Integer.parseInt(tfPort.getText());
 
-        System.out.println("Connecting to "+playerData.getServerAddress()+":"+playerData.getServerPort());
+        if(gameManager.connect(address, port))
+            bLogin.setDisable(false);
+        else
+            bLogin.setDisable(true);
+    }
+
+    @FXML
+    void login(){
+        String username = tfUsername.getText();
+
+        gameManager.login(username);
+        gameManager.setUsername(username);
+
+        notifyObservers("LOBBY");
     }
 
 }

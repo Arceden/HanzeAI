@@ -9,18 +9,20 @@ public class HasConnectedState implements GameManagerState {
     public HasConnectedState(GameManager gameManager){ this.gameManager=gameManager; }
 
     @Override
-    public void connect(String address, int port) {
+    public boolean connect(String address, int port) {
         System.err.println("Invalid event");
+        return false;
     }
 
     /* Login to the server with a specified name.
      * Possible errors:
      *  Tournament in progress
      *  Duplicate name exists*/
-    public void login(String username) {
+    public boolean login(String username) {
         System.out.println("Attempting to login as "+username);
         gameManager.server.send("login "+username);
         gameManager.setState(gameManager.getInLobbyState());
+        return false;
     }
 
     @Override
