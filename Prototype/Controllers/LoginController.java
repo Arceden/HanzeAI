@@ -38,10 +38,13 @@ public class LoginController extends ViewSubject {
     void login(){
         String username = tfUsername.getText();
 
-        gameManager.login(username);
-        gameManager.setUsername(username);
-
-        notifyObservers("LOBBY");
+        if(gameManager.login(username)){
+            System.out.println("Logged in as "+username);
+            notifyObservers("LOBBY");
+            gameManager.setUsername(username);
+        } else {
+            System.out.println("Could not login.");
+        }
     }
 
 }

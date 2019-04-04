@@ -1,6 +1,11 @@
 package States;
 
+import GameModes.Game;
 import Network.ConnectionHandler;
+import Players.AIPlayer;
+import Players.InputPlayer;
+import Players.Player;
+import javafx.application.Platform;
 
 public class GameManager implements GameManagerState {
 
@@ -18,6 +23,8 @@ public class GameManager implements GameManagerState {
 
     //Player data
     String username;
+    Player player;
+    Game game;
 
     //Constructor
     public GameManager(){
@@ -39,6 +46,10 @@ public class GameManager implements GameManagerState {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     /**

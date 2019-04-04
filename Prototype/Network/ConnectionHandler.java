@@ -5,6 +5,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -16,6 +17,7 @@ public class ConnectionHandler implements Subject {
 
     private ArrayList<Observer> observers;
     private Queue<String> outgoing = new LinkedList<>();
+    private Queue<String> processing = new LinkedList<>();
     private Queue<String> incomming = new LinkedList<>();
 
     private int port;
@@ -49,7 +51,7 @@ public class ConnectionHandler implements Subject {
 
         } catch (ConnectException ex){
             System.err.println(ex.getMessage());
-            notifyObservers("STATUS "+ex.getMessage());
+            notifyObservers("STATUS Server status: "+ex.getMessage());
             return false;
         }
         catch (IOException ex) {
@@ -64,8 +66,49 @@ public class ConnectionHandler implements Subject {
      *  Connection Handling
      *  Add the message to the outgoing queue
      */
-    public void send(String message){
+    public String send(String message) {
         outgoing.add(message);
+
+        //The logout/disconnect/quit message does not return a value
+        if(message.equalsIgnoreCase("disconnect")||message.equalsIgnoreCase("logout"))
+            return null;
+
+        try {
+            while (incomming.size() == 0) {
+                Thread.sleep(50);
+            }
+
+            String m = incomming.remove();
+
+            return m.split("%%%")[1];
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Request the list of players from the server
+     * This request should receive 2 values if accepted.
+     * (OK, SVR PLAYERLIST <list>)
+     * @return Server Message
+     */
+    public String getPlayers(){
+        String response = send("get playerlist");
+        if(response.contains("OK")){
+            try {
+                //Wait till message has arrived
+                while (processing.size()==0)
+                    Thread.sleep(50);
+                return processing.remove();
+
+            } catch (InterruptedException ex ){
+                ex.printStackTrace();
+            }
+        }
+
+        System.err.println(response);
+        return null;
     }
 
     /**
@@ -82,12 +125,13 @@ public class ConnectionHandler implements Subject {
                         toServer.println(message);
                         toServer.flush();
 
-                        while (incomming.size()==0){
+                        while (processing.size()==0){
                             Thread.sleep(50);
                         }
 
-                        //Return the message to the send method somehow
-                        System.out.println(message+" - "+incomming.remove());
+                        // Return the message along with the response
+                        incomming.add(message + "%%%" + processing.remove());
+
                     } else {
                         //Dont push it too hard. The outgoing queue size function needs its time to think
                         Thread.sleep(50);
@@ -108,12 +152,18 @@ public class ConnectionHandler implements Subject {
                     String[] args = message.split(" ");
 
                     switch (args[0]){
-                        case "OK":  incomming.add(message); break;
-                        case "ERR": incomming.add(message); break;
+                        case "OK":      processing.add(message); break;
+                        case "ERR":     processing.add(message); break;
+                        case "SVR":
+                            switch (args[1]){
+                                case "PLAYERLIST":  processing.add(message);break;
+                                case "GAMELIST":    processing.add(message);break;
+                            }
                         default:
-                            notifyObservers(message);
                             break;
                     }
+
+                    notifyObservers(message);
 
                 }
             } catch (NullPointerException ex){

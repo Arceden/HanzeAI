@@ -12,8 +12,16 @@
             fx:controller="Controllers.LobbyController"
             prefHeight="400.0" prefWidth="600.0">
     <HBox>
-        <Label fx:id="displayUsername"/>
-        <Button onAction="#disconnect">Disconnect from the server</Button>
+        <VBox>
+            <Label fx:id="displayUsername"/>
+            <Button onAction="#disconnect">Disconnect from the server</Button>
+            <Button onAction="#asPlayer" fx:id="asPlayer">Play as Player</Button>
+            <Button onAction="#asAI" fx:id="asAI" disable="true">Play as AI</Button>
+        </VBox>
+        <Label>Playerlist</Label>
+        <ListView onMouseClicked="#challengePlayer" fx:id="playerView"></ListView>
+        <Button onAction="#getPlayers">Refresh list</Button>
+        <ListView onMouseClicked="#acceptChallenge" fx:id="challengerView"></ListView>
     </HBox>
 
 </AnchorPane>
