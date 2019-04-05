@@ -176,6 +176,10 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     }
 
+    public void stopThreads(){
+        playerlistThread.interrupt();
+    }
+
     /**
      * Receive server messages
      * Tasks:
