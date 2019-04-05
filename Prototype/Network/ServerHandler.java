@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 public class ServerHandler extends ObservationSubject {
@@ -79,6 +80,8 @@ public class ServerHandler extends ObservationSubject {
                     System.out.println(message);
 
                 }
+            } catch (SocketException ex){
+                System.out.println("Stopped listening to the server.");
             } catch (IOException ex){
                 ex.printStackTrace();
             }
@@ -88,10 +91,14 @@ public class ServerHandler extends ObservationSubject {
     }
 
     /** Send a message to the server */
-    public String send(String message, boolean expectsOK){
+    public String send(String message, boolean expectsOK, boolean expectsSecondaryMessage){
         toServer.println(message);
         toServer.flush();
-        return null;
+        return "OK";
+    }
+
+    public String send(String message, boolean expectsOK){
+        return send(message, expectsOK, false);
     }
 
     public String send(String message){
@@ -106,19 +113,20 @@ public class ServerHandler extends ObservationSubject {
      */
 
     public String getPlayers(){
-        return null;
+        return send("get playerlist", true, true);
     }
 
     public String getGamelist(){
-        return null;
+        return send("get gamelist", true, true);
     }
 
-    public boolean login(){
-
+    public boolean login(String username){
+        send("login "+username, true);
         return false;
     }
 
     public void logout(){
+        send("logout");
         disconnect();
     }
 

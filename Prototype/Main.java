@@ -1,9 +1,15 @@
 import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
+import GameModes.Game;
+import GameModes.TicTacToe;
 import Network.ConnectionHandler;
 import Network.ServerHandler;
 import Observer.Observer;
+import Players.AIPlayer;
+import Players.InputPlayer;
+import Players.NetworkPlayer;
+import Players.Player;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -71,8 +77,23 @@ public class Main extends Application {
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
 
-
         root.setCenter(loginPane);
+
+        //BUG TESTING
+        server.connect("localhost", 7789);
+        server.login("arnold");
+        server.getPlayers();
+        server.getGamelist();
+
+        try {
+            Thread.sleep(1000);
+            server.disconnect();
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+
+
+
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
