@@ -33,7 +33,7 @@ public class Main extends Application {
         root.setBottom(lStatus);
 
         //Create the main variables
-        ConnectionHandler server = new ConnectionHandler();
+        ServerHandler server = new ServerHandler();
         GameManager gameManager = new GameManager();
         ViewHandler viewHandler = new ViewHandler(root);
         ServerStatus serverStatus = new ServerStatus(lStatus);
