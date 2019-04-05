@@ -1,5 +1,6 @@
 package Network;
 
+import Observer.Observer;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 

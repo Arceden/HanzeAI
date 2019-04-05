@@ -1,6 +1,6 @@
 package GameModes;
 
-import Network.Observer;
+import Observer.Observer;
 import Players.Player;
 
 import java.util.Random;

@@ -2,6 +2,7 @@ package States;
 
 import GameModes.Game;
 import Network.ConnectionHandler;
+import Network.ServerHandler;
 import Players.AIPlayer;
 import Players.InputPlayer;
 import Players.Player;

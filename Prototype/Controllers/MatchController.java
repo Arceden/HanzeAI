@@ -1,9 +1,9 @@
 package Controllers;
 
 import States.GameManager;
-import Views.ViewSubject;
+import Observer.ObservationSubject;
 
-public class MatchController extends ViewSubject {
+public class MatchController extends ObservationSubject {
 
     GameManager gameManager;
 

@@ -1,11 +1,12 @@
 package Network;
 
+import Observer.*;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -171,6 +172,8 @@ public class ConnectionHandler implements Subject {
                 Thread.currentThread().interrupt();
                 System.err.println("Connection lost!");
                 notifyObservers("STATUS Connection lost");
+
+
             } catch (IOException ex){
                 ex.printStackTrace();
             }

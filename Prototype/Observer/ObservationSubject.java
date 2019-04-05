@@ -1,11 +1,8 @@
-package Views;
-
-import Network.Observer;
-import Network.Subject;
+package Observer;
 
 import java.util.ArrayList;
 
-public class ViewSubject implements Subject {
+public class ObservationSubject implements Subject {
 
     private ArrayList<Observer> observers = new ArrayList<>();
 

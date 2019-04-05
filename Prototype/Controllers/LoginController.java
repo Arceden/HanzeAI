@@ -1,12 +1,12 @@
 package Controllers;
 
 import States.GameManager;
-import Views.ViewSubject;
+import Observer.ObservationSubject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class LoginController extends ViewSubject {
+public class LoginController extends ObservationSubject {
 
     GameManager gameManager;
 

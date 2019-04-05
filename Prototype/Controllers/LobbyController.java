@@ -1,10 +1,9 @@
 package Controllers;
 
-import Network.Observer;
+import Observer.*;
 import Players.AIPlayer;
 import Players.InputPlayer;
 import States.GameManager;
-import Views.ViewSubject;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
-public class LobbyController extends ViewSubject implements Observer {
+public class LobbyController extends ObservationSubject implements Observer {
 
     GameManager gameManager;
     ObservableList<String> playerList = FXCollections.observableArrayList();
