@@ -17,6 +17,9 @@ public class ServerHandler extends ObservationSubject {
     private PrintWriter toServer;
     private BufferedReader fromServer;
 
+    int expectingOKCount = 0;
+    int OKCount = 0;
+
     //Threads
     Thread listenerThread;
 
@@ -49,12 +52,14 @@ public class ServerHandler extends ObservationSubject {
 
     /** Close the connection by closing the sockets and the data streams */
     public void disconnect(){
-        listenerThread.interrupt();
-
         try {
+            listenerThread.interrupt();
+
             socket.close();
             toServer.close();
             fromServer.close();
+        } catch (NullPointerException ex){
+            //ignore
         } catch (IOException ex){
             ex.printStackTrace();
         }
@@ -78,6 +83,8 @@ public class ServerHandler extends ObservationSubject {
                     switch (args[0]){
                         case "OK":
                             //Message was received and proccessed succesfully
+                            OKCount++;
+//                            System.out.println("Exected amount ok OK's:"+expectingOKCount+"\tReceived amount of OK's:"+OKCount);
                             break;
                         case "ERR":
                             //Looks like we made a mistake
@@ -104,6 +111,8 @@ public class ServerHandler extends ObservationSubject {
 
     /** Send a message to the server */
     public String send(String message, boolean expectsOK){
+        if (expectsOK)
+            expectingOKCount++;
         toServer.println(message);
         toServer.flush();
         return "OK";
@@ -114,19 +123,17 @@ public class ServerHandler extends ObservationSubject {
     }
 
 
-
-
     /*
      * HELPER COMMANDS
      */
 
     /** Let the user send a move to the server */
     public void getPlayers(){
-        send("get playerlist");
+        send("get playerlist", true);
     }
 
     public void getGamelist(){
-        send("get gamelist");
+        send("get gamelist", true);
     }
 
     public boolean move(int cell) {
@@ -137,12 +144,12 @@ public class ServerHandler extends ObservationSubject {
     }
 
     public void subscribe(String game){
-        send("subscribe "+game);
+        send("subscribe "+game, true);
     }
 
     public boolean login(String username){
         send("login "+username, true);
-        return false;
+        return true;
     }
 
     public void logout(){

@@ -177,7 +177,11 @@ public class LobbyController extends ObservationSubject implements Observer {
     }
 
     public void stopThreads(){
-        playerlistThread.interrupt();
+        try {
+            playerlistThread.interrupt();
+        } catch (NullPointerException ex){
+            //ignore
+        }
     }
 
     /**

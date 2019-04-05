@@ -19,13 +19,19 @@ public class HasConnectedState implements GameManagerState {
      *  Tournament in progress
      *  Duplicate name exists*/
     public boolean login(String username) {
-        System.out.println("Attempting to login as "+username);
-        if(gameManager.server.send("login "+username).contains("OK")){
+        boolean response = gameManager.server.login(username);
+        if(response){
             gameManager.setState(gameManager.getInLobbyState());
             return true;
         } else {
             return false;
         }
+//        if(gameManager.server.login(username).contains("OK")){
+//            gameManager.setState(gameManager.getInLobbyState());
+//            return true;
+//        } else {
+//            return false;
+//        }
     }
 
     @Override
