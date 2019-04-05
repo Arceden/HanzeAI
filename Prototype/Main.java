@@ -1,92 +1,125 @@
-import Algorithms.*;
-import Controllers.ReversiController;
-import Controllers.TicTacToeController;
-import GameModes.*;
-import Players.*;
-import Views.ReversiView;
-import Views.TicTacToeView;
+import Controllers.LobbyController;
+import Controllers.LoginController;
+import Controllers.MatchController;
+import Network.ConnectionHandler;
+import Network.ServerHandler;
+import Observer.Observer;
+import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    LoginController loginController;
+    LobbyController lobbyController;
+    MatchController matchController;
+
+    Pane loginPane;
+    Pane lobbyPane;
+    Pane matchPane;
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        /**
-         * Setting MVC components
-         *
-         * */
-        TicTacToeView ticTacToeView = new TicTacToeView();
-        TicTacToe ticTacToeModel = new TicTacToe();
-        TicTacToeController ticTacToeController = new TicTacToeController(ticTacToeModel, ticTacToeView);
-
-        ReversiView reversiView = new ReversiView();
-        Reversi reversiModel = new Reversi();
-        ReversiController reversiController = new ReversiController(reversiModel, reversiView);
-
-
-        BorderPane mainPane = new BorderPane();
-        GridPane gamePane = new GridPane();
-        TextArea taLog = new TextArea();
+        //Create the root pane
+        BorderPane root = new BorderPane();
         Label lStatus = new Label();
+        root.setBottom(lStatus);
 
-        mainPane.setRight(taLog);
-        mainPane.setBottom(lStatus);
-        mainPane.setCenter(gamePane);
+        //Create the main variables
+        ConnectionHandler server = new ConnectionHandler();
+        GameManager gameManager = new GameManager();
+        ViewHandler viewHandler = new ViewHandler(root);
+        ServerStatus serverStatus = new ServerStatus(lStatus);
+
+        //Config
+        server.registerObserver(serverStatus);
+        gameManager.setServer(server);
+
+        /* Login Screen */
+        FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("Views/login.fxml"));
+        loginPane = loginLoader.load();
+        loginController = loginLoader.getController();
+
+        /* Lobby Screen */
+        FXMLLoader lobbyLoader = new FXMLLoader(getClass().getResource("Views/lobby.fxml"));
+        lobbyPane = lobbyLoader.load();
+        lobbyController = lobbyLoader.getController();
+
+        /* Match Screen */
+        FXMLLoader matchLoader = new FXMLLoader(getClass().getResource("Views/match.fxml"));
+        matchPane = matchLoader.load();
+        matchController = matchLoader.getController();
+
+
+        //Assign the models to the game managers
+        loginController.setGameManager(gameManager);
+        lobbyController.setGameManager(gameManager);
+        matchController.setGameManager(gameManager);
+
+        //Assign the viewHandler as the observer for the views
+        loginController.registerObserver(viewHandler);
+        lobbyController.registerObserver(viewHandler);
+        matchController.registerObserver(viewHandler);
+
+        //Assign the controller to the server handler
+        server.registerObserver(lobbyController);
+
+
+        root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
-        Scene scene = new Scene(mainPane);
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Game Client");
         primaryStage.show();
 
-
-        /**
-         * Test the players and the game
-         */
-
-        //Create buttons for game
-        for(int i=1;i<4;i++)
-            for(int x=1;x<4;x++)
-                gamePane.add(new Button(""+(x+(i))), i, x);
-
-        //Create game and players
-        Player arnold = new InputPlayer("Arnolditto");
-        Player system = new AIPlayer("System", new Minimax());
-        Game game = new TicTacToe(arnold, system);
-
-        Platform.runLater(() -> {
-            taLog.appendText("New player added: "+arnold.getUsername()+"\n");
-            taLog.appendText("New player added: "+system.getUsername()+"\n");
-            taLog.appendText("Game selected: "+game.getName()+"\n");
-        });
-
-        new Thread(()->{
-            game.start();
-
-            while (!game.hasEnded()){
-                Platform.runLater(()-> lStatus.setText(game.getCurrentPlayer()+"'s turn!"));
-                int move = game.getNextMove();
-                game.move(move);
-            }
-        }).start();
-
-
-
-
-        //Handle the server connection
-//        ServerConnection server = new ServerConnection("localhost", 7789);
-//        server.connect();
-//
-//        System.out.println(server.isConnected());
-
     }
+
+    private class ViewHandler implements Observer {
+        BorderPane root=null;
+
+        ViewHandler(BorderPane root){
+            this.root=root;
+        }
+
+        @Override
+        public void update(String message) {
+            switch (message) {
+                case "LOGIN":
+                    Platform.runLater(()->root.setCenter(loginPane));
+                    break;
+                case "LOBBY":
+                    Platform.runLater(()->root.setCenter(lobbyPane));
+                    lobbyController.refresh();
+                    break;
+                case "MATCH":
+                    Platform.runLater(()->root.setCenter(matchPane));
+                    break;
+            }
+        }
+    }
+
+    private class ServerStatus implements Observer {
+        Label lStatus;
+        ServerStatus(Label lStatus){
+            this.lStatus=lStatus;
+        }
+
+        @Override
+        public void update(String message) {
+            String[] args = message.split(" ");
+            if(args[0].equalsIgnoreCase("STATUS")) {
+                Platform.runLater(()->lStatus.setText("Server Status: "+message.replace("STATUS ","")));
+            }
+        }
+    }
+
 }

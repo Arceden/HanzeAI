@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.LoginController"
+            prefHeight="400.0" prefWidth="600.0">
+    <VBox>
+        <GridPane>
+            <Label text="Server Address" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="tfAddress" text="localhost" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="Port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="tfPort" text="7789" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Button onAction="#connect" text="Connect" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+
+        <GridPane>
+            <Label text="Username" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="tfUsername" text="ThickLad" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Button fx:id="bLogin" onAction="#login" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="1" disable="true"/>
+        </GridPane>
+    </VBox>
+</AnchorPane>

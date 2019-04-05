@@ -1,12 +1,11 @@
 package GameModes;
 
+import Observer.Observer;
 import Players.Player;
-import java.awt.*;
-import java.awt.event.*;
 
 import java.util.Random;
 
-public class TicTacToe implements Game {
+public class TicTacToe implements Game, Observer {
 
     private Player player1;
     private Player player2;
@@ -82,5 +81,38 @@ public class TicTacToe implements Game {
     public String getCurrentStatus()
     {
         return "";
+    }
+
+//    public boolean isFull()
+//    {
+//        for(int i = 0; i < 3; i++)
+//        {
+//            for(int j = 0; j < 3; j++)
+//            {
+//                if(cells[i][j].getToken() == " ");
+//                {
+//                    return false;
+//                }
+//                else
+//                {
+//                    return true;
+//                }
+//            }
+//        }
+//    }
+
+
+    public void setTest(String value)
+    {
+        this.testValue = value;
+    }
+
+    public String getTest() {
+        return this.testValue;
+    }
+
+    public void update(String message) {
+        //Handle server observations
+        System.err.println("[TicTacToe] "+message);
     }
 }
