@@ -1,7 +1,9 @@
 import Algorithms.*;
+import Controllers.ReversiController;
 import Controllers.TicTacToeController;
 import GameModes.*;
 import Players.*;
+import Views.ReversiView;
 import Views.TicTacToeView;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,7 +27,10 @@ public class Main extends Application {
         TicTacToeView ticTacToeView = new TicTacToeView();
         TicTacToe ticTacToeModel = new TicTacToe();
         TicTacToeController ticTacToeController = new TicTacToeController(ticTacToeModel, ticTacToeView);
-        ticTacToeController.setTestValue();
+
+        ReversiView reversiView = new ReversiView();
+        Reversi reversiModel = new Reversi();
+        ReversiController reversiController = new ReversiController(reversiModel, reversiView);
 
 
         BorderPane mainPane = new BorderPane();

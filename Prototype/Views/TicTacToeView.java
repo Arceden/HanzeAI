@@ -1,18 +1,44 @@
 package Views;
 
-import GameModes.TicTacToe;
-import javafx.scene.control.Cell;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import java.util.ArrayList;
 
-import javax.swing.*;
-import java.awt.*;
+public class TicTacToeView extends Pane {
 
-public class TicTacToeView extends JFrame {
+    ArrayList<Rectangle> cells = new ArrayList<>();
+    BorderPane pane;
 
-
-
-    public TicTacToeView()
+    public TicTacToeView(BorderPane pane)
     {
+        this.pane = pane;
 
+
+        GridPane gr = new GridPane();
+        Button btn = new Button();
+        btn.setPrefHeight(50);
+        btn.setPrefWidth(50);
+
+
+        for (int i = 0; i < 9; i++)
+        {
+            Rectangle rect = new Rectangle(50, 50, 50, 50);
+
+            if(i%2==1)
+            {
+                rect.setFill(Color.BLACK);
+            }
+
+            else
+            {
+                rect.setFill(Color.GREY);
+            }
+            cells.add(rect);
+
+            gr.add(rect, i%3, i/3);
+        }
     }
 
 
@@ -21,20 +47,6 @@ public class TicTacToeView extends JFrame {
         System.out.println(value);
     }
 
-    public void TicTacToeFrame(int cell[][])
-    {
-        JPanel panel = new JPanel(new GridLayout(3, 3, 0, 0));
-
-        for(int i = 0; i < 3; i++)
-        {
-            for(int j = 0; j < 3; j++)
-            {
-                //panel.add(cell[i][j] = new cell());
-            }
-        }
-
-        add(panel, BorderLayout.CENTER);
-    }
 
 
 

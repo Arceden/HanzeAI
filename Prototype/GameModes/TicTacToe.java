@@ -83,34 +83,4 @@ public class TicTacToe implements Game {
     {
         return "";
     }
-
-
-//    public boolean isFull()
-//    {
-//        for(int i = 0; i < 3; i++)
-//        {
-//            for(int j = 0; j < 3; j++)
-//            {
-//                if(cells[i][j].getToken() == " ");
-//                {
-//                    return false;
-//                }
-//                else
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//    }
-
-
-    public void setTest(String value)
-    {
-        this.testValue = value;
-    }
-
-    public String getTest()
-    {
-        return this.testValue;
-    }
 }
