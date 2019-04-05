@@ -94,7 +94,6 @@ public class Main extends Application {
 
 
 
-
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

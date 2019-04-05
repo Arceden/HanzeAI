@@ -17,14 +17,8 @@ public class ServerHandler extends ObservationSubject {
     private PrintWriter toServer;
     private BufferedReader fromServer;
 
-    //Running booleans
-    private boolean connected;
-
+    //Threads
     Thread listenerThread;
-
-    public ServerHandler(){
-        connected=false;
-    }
 
     /** Start the actual connection */
     public boolean connect(String address, int port){
@@ -43,7 +37,6 @@ public class ServerHandler extends ObservationSubject {
             //Notify the state of the connection
             notifyObservers("STATUS Connected");
 
-            connected = true;
             return true;
 
         } catch (IOException ex){
@@ -56,8 +49,9 @@ public class ServerHandler extends ObservationSubject {
 
     /** Close the connection by closing the sockets and the data streams */
     public void disconnect(){
+        listenerThread.interrupt();
+
         try {
-            connected=false;
             socket.close();
             toServer.close();
             fromServer.close();
@@ -72,18 +66,36 @@ public class ServerHandler extends ObservationSubject {
             try {
                 while (true) {
 
-                    //If the connected variable is false, stop this thread.
-                    if (!connected)
-                        Thread.currentThread().interrupt();
-
+                    //Wait until a new message has arrived
                     String message = fromServer.readLine();
-                    System.out.println(message);
+
+                    //In some cases, a message may be null. If so, ignore.
+                    if (message==null)
+                        continue;
+
+                    String[] args = message.split(" ");
+
+                    switch (args[0]){
+                        case "OK":
+                            //Message was received and proccessed succesfully
+                            break;
+                        case "ERR":
+                            //Looks like we made a mistake
+                            System.out.println(message);
+                            break;
+                        case "SVR":
+                            //Server has sent important data which has to be processed
+                            notifyObservers(message);
+                            break;
+                        default:
+                            System.out.println(message);
+                    }
 
                 }
             } catch (SocketException ex){
-                System.out.println("Stopped listening to the server.");
+
             } catch (IOException ex){
-                ex.printStackTrace();
+                System.out.println("Stopped listening to the server.");
             }
         });
 
@@ -91,14 +103,10 @@ public class ServerHandler extends ObservationSubject {
     }
 
     /** Send a message to the server */
-    public String send(String message, boolean expectsOK, boolean expectsSecondaryMessage){
+    public String send(String message, boolean expectsOK){
         toServer.println(message);
         toServer.flush();
         return "OK";
-    }
-
-    public String send(String message, boolean expectsOK){
-        return send(message, expectsOK, false);
     }
 
     public String send(String message){
@@ -112,12 +120,24 @@ public class ServerHandler extends ObservationSubject {
      * HELPER COMMANDS
      */
 
-    public String getPlayers(){
-        return send("get playerlist", true, true);
+    /** Let the user send a move to the server */
+    public void getPlayers(){
+        send("get playerlist");
     }
 
-    public String getGamelist(){
-        return send("get gamelist", true, true);
+    public void getGamelist(){
+        send("get gamelist");
+    }
+
+    public boolean move(int cell) {
+        send("move "+cell);
+
+        //Check if move was valid
+        return true;
+    }
+
+    public void subscribe(String game){
+        send("subscribe "+game);
     }
 
     public boolean login(String username){
@@ -127,6 +147,13 @@ public class ServerHandler extends ObservationSubject {
 
     public void logout(){
         send("logout");
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+
         disconnect();
     }
 

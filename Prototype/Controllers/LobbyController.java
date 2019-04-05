@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 
 public class LobbyController extends ObservationSubject implements Observer {
 
@@ -18,11 +19,15 @@ public class LobbyController extends ObservationSubject implements Observer {
     ObservableList<String> playerList = FXCollections.observableArrayList();
     ObservableList<String> challengerList = FXCollections.observableArrayList();
 
+    //Threads
+    Thread playerlistThread;
+
     @FXML private Button asPlayer;
     @FXML private Button asAI;
     @FXML private Label displayUsername;
     @FXML private ListView<String> playerView;
     @FXML private ListView<String> challengerView;
+    @FXML private HBox subscribeTo;
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -32,9 +37,12 @@ public class LobbyController extends ObservationSubject implements Observer {
         //Set default play style
         gameManager.setPlayer(new AIPlayer(gameManager.getUsername()));
 
-        //Retreive playerlist
-        getPlayers();
+        //Retreive gamelist and playerlist
+        gameManager.server.getGamelist();
+        playerlistUpToDate();
 
+        //Initialize the listViews
+        playerView.setItems(playerList);
         challengerView.setItems(challengerList);
 
         //Update the welcome text
@@ -43,13 +51,23 @@ public class LobbyController extends ObservationSubject implements Observer {
         });
     }
 
-    public void getPlayers(){
-        //Create a list for the players
-        playerList.clear();
+    private void playerlistUpToDate(){
 
-        //Request playerlist
-        String message = gameManager.server.getPlayers();
+        playerlistThread = new Thread(()->{
+            try {
+                while (true) {
+                    gameManager.server.getPlayers();
+                    Thread.sleep(2000);
+                }
+            } catch (InterruptedException ex){
+                //ignore
+            }
+        });
 
+        playerlistThread.start();
+    }
+
+    private void playerlistHandler(String message){
         //Format the playernames
         message = message.replace("SVR PLAYERLIST ", "");
         String[] players = message.substring(1, message.length()-1).split(", ");
@@ -57,8 +75,34 @@ public class LobbyController extends ObservationSubject implements Observer {
             players[i] = players[i].substring(1, players[i].length()-1);
 
         //Add the list to the listview
-        playerList.addAll(players);
-        playerView.setItems(playerList);
+
+        Platform.runLater(()->{
+            playerList.clear();
+            playerList.addAll(players);
+        });
+    }
+
+    private void gamelistHandler(String message){
+        //Clear the list, incase it has already been filled
+        Platform.runLater(()->{
+            subscribeTo.getChildren().clear();
+        });
+
+        //Format the items
+        message = message.replace("SVR GAMELIST ", "");
+        String[] gametypes = message.substring(1, message.length()-1).split(", ");
+        for(int i=0;i<gametypes.length;i++)
+            gametypes[i] = gametypes[i].substring(1, gametypes[i].length()-1);
+
+        //Add a event handler and bring it to the view
+        for(int i=0;i<gametypes.length;i++){
+            String name = gametypes[i];
+            Button subscribe = new Button("Subscribe to "+name);
+            subscribe.setOnAction(e->{
+                gameManager.server.subscribe(name);
+            });
+            Platform.runLater(()->subscribeTo.getChildren().add(subscribe));
+        }
     }
 
     @FXML
@@ -98,6 +142,8 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     @FXML
     public void disconnect(){
+        playerlistThread.interrupt();
+
         gameManager.disconnect();
         notifyObservers("LOGIN");
     }
@@ -112,6 +158,7 @@ public class LobbyController extends ObservationSubject implements Observer {
         System.out.println(message);
 
         //Change the gameManager state to InMatchState
+        playerlistThread.interrupt();
         gameManager.matchStart();
 
         //Change view
@@ -119,8 +166,9 @@ public class LobbyController extends ObservationSubject implements Observer {
     }
 
     private void challengerApproaches(String message){
-        String args[] = message.split(" ");
-        challengerList.add(args[4].substring(1, args[4].length()-2)+"%"+args[6].substring(1, args[6].length()-2));
+        // TODO: FIX THIS GARBAGE
+//        String args[] = message.split(" ");
+//        challengerList.add(args[4].substring(1, args[4].length()-2)+"%"+args[6].substring(1, args[6].length()-2));
     }
 
     /* TODO: Remove the challenger who left from the list */
@@ -152,6 +200,14 @@ public class LobbyController extends ObservationSubject implements Observer {
                             challengerApproaches(message);
                             break;
                     }
+                    break;
+
+                case "PLAYERLIST":
+                    playerlistHandler(message);
+                    break;
+                case "GAMELIST":
+                    gamelistHandler(message);
+                    break;
             }
         }
     }
