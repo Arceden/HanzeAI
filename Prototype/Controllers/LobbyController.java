@@ -228,6 +228,14 @@ public class LobbyController extends ObservationSubject implements Observer {
                         case "MATCH":
                             //Starting a match!
                             startMatch(message);
+                            gameManager.server.send("move 1");
+                            break;
+                        case "WIN":
+                            System.out.println(message);
+                            notifyObservers("LOBBY");
+                            break;
+                        case "LOSS":
+                            notifyObservers("LOBBY");
                             break;
                         case "CHALLENGE":
                             if(args[3].equalsIgnoreCase("CANCELLED"))
