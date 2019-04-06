@@ -237,6 +237,9 @@ public class LobbyController extends ObservationSubject implements Observer {
                         case "LOSS":
                             notifyObservers("LOBBY");
                             break;
+                        case "TIE":
+                            notifyObservers("LOBBY");
+                            break;
                         case "CHALLENGE":
                             if(args[3].equalsIgnoreCase("CANCELLED"))
                                 //Remove from list
