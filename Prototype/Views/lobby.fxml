@@ -4,21 +4,41 @@
 <?import javafx.scene.layout.*?>
 
 <?import java.net.URL?>
-<AnchorPane xmlns="http://javafx.com/javafx"
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.Group?>
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controllers.LobbyController"
             prefHeight="400.0" prefWidth="600.0">
-    <HBox>
+
+    <center>
         <VBox>
-            <Label fx:id="displayUsername"/>
-            <Button onAction="#disconnect">Disconnect from the server</Button>
-            <Button onAction="#asPlayer" fx:id="asPlayer">Play as Player</Button>
-            <Button onAction="#asAI" fx:id="asAI" disable="true">Play as AI</Button>
-            <Label text="Subscribe to: "/>
-            <HBox fx:id="subscribeTo"></HBox>
+            <Label text="Welcome, placeholder!" fx:id="displayUsername"/>
+
+            <GridPane>
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="Playstyle"/>
+                <Button GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#asAI" fx:id="asAI" text="As AI" disable="true"/>
+                <Button GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#asPlayer" fx:id="asPlayer" text="As Player"/>
+                <Button GridPane.columnIndex="2" GridPane.rowIndex="1" onAction="#disconnect" text="Not"/>
+            </GridPane>
+            <GridPane>
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="Enter game"/>
+                <Button GridPane.columnIndex="0" GridPane.rowIndex="4" text="Tic-tac-toe" onAction="#subscribeToTic"/>
+                <Button GridPane.columnIndex="1" GridPane.rowIndex="4" text="Reversi" onAction="#subscribeToRev"/>
+            </GridPane>
+
+            <Label text="Challenges"/>
+            <ListView onMouseClicked="#acceptChallenge" fx:id="challengerView"/>
         </VBox>
-        <Label>Playerlist</Label>
-        <ListView onMouseClicked="#challengePlayer" fx:id="playerView"></ListView>
-        <ListView onMouseClicked="#acceptChallenge" fx:id="challengerView"></ListView>
-    </HBox>
-</AnchorPane>
+    </center>
+    <right>
+        <VBox>
+            <Label text="Online Players"/>
+            <ListView onMouseClicked="#challengePlayer" fx:id="playerView"/>
+        </VBox>
+    </right>
+
+    <stylesheets>
+        <URL value="@main.css"/>
+    </stylesheets>
+</BorderPane>

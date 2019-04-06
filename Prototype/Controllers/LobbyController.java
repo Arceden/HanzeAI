@@ -11,23 +11,22 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
 public class LobbyController extends ObservationSubject implements Observer {
 
+    Thread playerlistThread;
     GameManager gameManager;
     ObservableList<String> playerList = FXCollections.observableArrayList();
     ObservableList<String> challengerList = FXCollections.observableArrayList();
 
-    //Threads
-    Thread playerlistThread;
-
-    @FXML private Button asPlayer;
     @FXML private Button asAI;
+    @FXML private Button asPlayer;
+    @FXML private HBox subscribeTo;
     @FXML private Label displayUsername;
     @FXML private ListView<String> playerView;
     @FXML private ListView<String> challengerView;
-    @FXML private HBox subscribeTo;
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -57,7 +56,7 @@ public class LobbyController extends ObservationSubject implements Observer {
             try {
                 while (true) {
                     gameManager.server.getPlayers();
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 }
             } catch (InterruptedException ex){
                 //ignore
@@ -106,6 +105,16 @@ public class LobbyController extends ObservationSubject implements Observer {
     }
 
     @FXML
+    private void subscribeToTic(){
+        gameManager.server.subscribe("Tic-tac-toe");
+    }
+
+    @FXML
+    private void subscribeToRev(){
+        gameManager.server.subscribe("Reversi");
+    }
+
+    @FXML
     void asPlayer(){
         gameManager.setPlayer(new InputPlayer(gameManager.getUsername()));
         asPlayer.setDisable(true);
@@ -123,21 +132,31 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     @FXML
     public void challengePlayer(){
-        String selectedPlayer = playerView.getSelectionModel().getSelectedItem();
-        if(selectedPlayer.equalsIgnoreCase(gameManager.getUsername())){
-            System.out.println("You can't challenge yourself!");
-            return;
-        }
+        try {
+            String selectedPlayer = playerView.getSelectionModel().getSelectedItem();
+            if (selectedPlayer.equalsIgnoreCase(gameManager.getUsername())) {
+                System.out.println("You can't challenge yourself!");
+                return;
+            }
 
-        System.out.println("Challenging "+selectedPlayer+" for a game of Tic-tac-toe!");
-        gameManager.server.send("challenge \""+selectedPlayer+"\" \"Tic-tac-toe\"");
+            System.out.println("Challenging " + selectedPlayer + " for a game of Tic-tac-toe!");
+            gameManager.server.send("challenge \"" + selectedPlayer + "\" \"Tic-tac-toe\"");
+        } catch (NullPointerException ex){
+            //This happens when the listview is clicked but noone was selected
+            //ignore
+        }
     }
 
     @FXML
     void acceptChallenge(){
-        String selectedPlayer = challengerView.getSelectionModel().getSelectedItem();
-        String challengeNumber = selectedPlayer.split("%")[1];
-        gameManager.server.send("challenge accept "+challengeNumber);
+        try {
+            String selectedPlayer = challengerView.getSelectionModel().getSelectedItem();
+            String challengeNumber = selectedPlayer.split("ChallengeNr:")[1];
+            gameManager.server.send("challenge accept " + challengeNumber);
+        } catch (NullPointerException ex){
+            //This happens when the listview is clicked but noone was selected
+            //ignore
+        }
     }
 
     @FXML
@@ -165,22 +184,29 @@ public class LobbyController extends ObservationSubject implements Observer {
         notifyObservers("MATCH");
     }
 
+    /** Another player has challenged you. Show this on screen */
     private void challengerApproaches(String message){
         // TODO: FIX THIS GARBAGE
-//        String args[] = message.split(" ");
-//        challengerList.add(args[4].substring(1, args[4].length()-2)+"%"+args[6].substring(1, args[6].length()-2));
+        String args[] = message.split(" ");
+
+        Platform.runLater(()->{
+            challengerList.add(args[4].substring(1, args[4].length()-2)+" ChallengeNr:"+args[6].substring(1, args[6].length()-2));
+        });
     }
 
     /* TODO: Remove the challenger who left from the list */
     private void challengerCancellled(String message){
+        String args[] = message.split(" ");
+        for (int i=0;i<challengerList.size();i++){
+            String nr = challengerList.get(i).split(" ChallengeNr:")[1];
+            System.out.println(nr+args[5].substring(1, args[5].length()-2));
+            if(nr.equalsIgnoreCase(args[5].substring(1, args[5].length()-2))) {
+                int n = i;
+                Platform.runLater(() -> {
+                    challengerList.remove(n);
+                });
+            }
 
-    }
-
-    public void stopThreads(){
-        try {
-            playerlistThread.interrupt();
-        } catch (NullPointerException ex){
-            //ignore
         }
     }
 
@@ -204,8 +230,12 @@ public class LobbyController extends ObservationSubject implements Observer {
                             startMatch(message);
                             break;
                         case "CHALLENGE":
-                            //Append the challenger to the list
-                            challengerApproaches(message);
+                            if(args[3].equalsIgnoreCase("CANCELLED"))
+                                //Remove from list
+                                challengerCancellled(message);
+                            else
+                                //Append the challenger to the list
+                                challengerApproaches(message);
                             break;
                     }
                     break;
@@ -214,9 +244,19 @@ public class LobbyController extends ObservationSubject implements Observer {
                     playerlistHandler(message);
                     break;
                 case "GAMELIST":
-                    gamelistHandler(message);
+//                    gamelistHandler(message);
                     break;
             }
         }
     }
+
+    /** Stop the threads. This command has to be executed when the window is being closed */
+    public void stopThreads(){
+        try {
+            playerlistThread.interrupt();
+        } catch (NullPointerException ex){
+            //ignore
+        }
+    }
+
 }

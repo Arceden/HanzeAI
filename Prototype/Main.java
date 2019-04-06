@@ -80,6 +80,7 @@ public class Main extends Application {
 
         //Set the first pane
         root.setCenter(loginPane);
+//        root.setCenter(lobbyPane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);

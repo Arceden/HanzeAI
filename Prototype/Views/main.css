@@ -1,0 +1,8 @@
+BorderPane {
+    -fx-padding: 10;
+}
+
+GridPane {
+    -fx-border-color: black;
+    -fx-padding: 10;
+}
