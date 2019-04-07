@@ -2,10 +2,15 @@ import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
 import Controllers.TicTacToeController;
+import GameModes.Game;
 import GameModes.TicTacToe;
 import Network.ConnectionHandler;
 import Network.ServerHandler;
 import Observer.Observer;
+import Players.AIPlayer;
+import Players.InputPlayer;
+import Players.NetworkPlayer;
+import Players.Player;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -14,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -38,7 +44,7 @@ public class Main extends Application {
         root.setBottom(lStatus);
 
         //Create the main variables
-        ConnectionHandler server = new ConnectionHandler();
+        ServerHandler server = new ServerHandler();
         GameManager gameManager = new GameManager();
         ViewHandler viewHandler = new ViewHandler(root);
         ServerStatus serverStatus = new ServerStatus(lStatus);
@@ -83,8 +89,11 @@ public class Main extends Application {
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
 
+        //root.setCenter(ticTacToePane);
 
-        root.setCenter(ticTacToePane);
+        //Set the first pane
+        root.setCenter(loginPane);
+//        root.setCenter(lobbyPane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
@@ -92,6 +101,12 @@ public class Main extends Application {
         primaryStage.setTitle("Game Client");
         primaryStage.show();
 
+
+        //Handle window closing
+        primaryStage.setOnCloseRequest(e->{
+            lobbyController.stopThreads();
+            server.disconnect();
+        });
     }
 
     private class ViewHandler implements Observer {

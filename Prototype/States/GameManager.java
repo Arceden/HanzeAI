@@ -21,7 +21,7 @@ public class GameManager implements GameManagerState {
     GameManagerState state;
 
     //Connection Management
-    public ConnectionHandler server;
+    public ServerHandler server;
     String username;
     Player player;
     Game game;
@@ -36,7 +36,7 @@ public class GameManager implements GameManagerState {
         setState(getStartState());
     }
 
-    public void setServer(ConnectionHandler server) {
+    public void setServer(ServerHandler server) {
         this.server = server;
     }
 
