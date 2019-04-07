@@ -23,6 +23,6 @@ public interface Game {
     public void setPlayer2(Player player2);
 
     public String getName();
-    public String getCurrentPlayer();
+    public Player getCurrentPlayer();
     public String getCurrentStatus();
 }

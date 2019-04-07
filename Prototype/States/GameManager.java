@@ -7,6 +7,7 @@ import Players.AIPlayer;
 import Players.InputPlayer;
 import Players.Player;
 import javafx.application.Platform;
+import javafx.scene.layout.Pane;
 
 public class GameManager implements GameManagerState {
 
@@ -50,6 +51,10 @@ public class GameManager implements GameManagerState {
     public String getUsername() {
         return username;
     }
+
+    public void setGame(Game game) { this.game = game; }
+
+    public Game getGame() { return game; }
 
     /**
      * State functions

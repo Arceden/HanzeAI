@@ -10,7 +10,6 @@ public class TicTacToe implements Game, Observer {
     private Player player1;
     private Player player2;
     public Player playerTurn;
-    private String testValue;
 
     public final String name = "TicTacToe";
     private int[][] cells = new int[3][3];
@@ -83,33 +82,6 @@ public class TicTacToe implements Game, Observer {
         return "";
     }
 
-//    public boolean isFull()
-//    {
-//        for(int i = 0; i < 3; i++)
-//        {
-//            for(int j = 0; j < 3; j++)
-//            {
-//                if(cells[i][j].getToken() == " ");
-//                {
-//                    return false;
-//                }
-//                else
-//                {
-//                    return true;
-//                }
-//            }
-//        }
-//    }
-
-
-    public void setTest(String value)
-    {
-        this.testValue = value;
-    }
-
-    public String getTest() {
-        return this.testValue;
-    }
 
     public void update(String message) {
         //Handle server observations

@@ -1,6 +1,8 @@
 import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
+import Controllers.TicTacToeController;
+import GameModes.TicTacToe;
 import Network.ConnectionHandler;
 import Network.ServerHandler;
 import Observer.Observer;
@@ -19,10 +21,12 @@ public class Main extends Application {
     LoginController loginController;
     LobbyController lobbyController;
     MatchController matchController;
+    TicTacToeController ticTacToeController;
 
     Pane loginPane;
     Pane lobbyPane;
     Pane matchPane;
+    Pane ticTacToePane;
 
 
     @Override
@@ -58,22 +62,29 @@ public class Main extends Application {
         matchPane = matchLoader.load();
         matchController = matchLoader.getController();
 
+        /* Tic Tac Toe Screen */
+        FXMLLoader ticTacToeLoader = new FXMLLoader(getClass().getResource("Views/ticTacToeView.fxml"));
+        ticTacToePane = ticTacToeLoader.load();
+        ticTacToeController = ticTacToeLoader.getController();
 
         //Assign the models to the game managers
         loginController.setGameManager(gameManager);
         lobbyController.setGameManager(gameManager);
         matchController.setGameManager(gameManager);
+        ticTacToeController.setGameManager(gameManager);
+
 
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
         lobbyController.registerObserver(viewHandler);
         matchController.registerObserver(viewHandler);
+        ticTacToeController.registerObserver(viewHandler);
 
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
 
 
-        root.setCenter(loginPane);
+        root.setCenter(ticTacToePane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
