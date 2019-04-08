@@ -12,12 +12,12 @@ public interface Game {
     /** Execute the move and return true if it has been successfully executed */
     public boolean move(int coordinate);
 
-    public ArrayList MakeMove(int x, int y);
+    public int MakeMove(int x, int y);
 
     public void switchTurns();
 
     /** Check if the specified move is valid */
-    public boolean moveIsValid(int x, int y);
+    public boolean moveIsValid(int coordinate);
 
     /** Start the game by preparing the board and choose who starts (or retreive the starting player if online) */
     public void start();
