@@ -2,10 +2,16 @@ package Controllers;
 
 import GameModes.Game;
 import States.GameManager;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+
+import java.util.Collection;
+import java.util.Collections;
 
 public class ReversiController {
 
@@ -38,23 +44,28 @@ public class ReversiController {
 
     }
 
+    private EventHandler<ActionEvent> createCellHandler(int i) {
+        return event -> tileHandler(i);
+    }
+    private void tileHandler (int i){
+        System.out.println("User pressed tile "+i);
+    }
+
     public void initViewCells(){
-        for(int i=0;i<8*8;i++){
-            Button cell = new Button();
-            cell.setStyle("-fx-background-color: green; -fx-border-color: black");
-            cell.setMinSize(100,100);
-            cell.setPadding(new Insets(2));
 
-            int x = i%8;
-            int y = i/8;
+        for(int x=0;x<8;x++){
+            for(int y=0;y<8;y++){
+                int i = (x%8)+1;
+                i+=y*8;
+                i--;
 
-            cell.setUserData(x);
-            cell.setOnAction(e->{
-                System.out.println(cell.getUserData());
-            });
+                Button cell = new Button();
+                cell.setOnAction(createCellHandler(i));
 
-            gamePane.add(cell, x, y);
+                gamePane.add(cell, x, y);
+            }
         }
+
     }
 
 }
