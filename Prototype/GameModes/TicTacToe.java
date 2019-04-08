@@ -62,8 +62,8 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public String getCurrentPlayer() {
-        return playerTurn.getUsername();
+    public Player getCurrentPlayer() {
+        return playerTurn;
     }
 
     @Override
