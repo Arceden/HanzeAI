@@ -6,7 +6,7 @@ import Players.Player;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class TicTacToe implements Game, Observer {
+public class TicTacToe implements Game {
 //
 //    private Player player1;
 //    private Player player2;
@@ -134,6 +134,13 @@ public class TicTacToe implements Game, Observer {
 //    }
 
 
+    private Player player1;
+    private Player player2;
+    public Player playerTurn;
+
+    public final String name = "TicTacToe";
+    private int[][] cells = new int[3][3];
+
     @Override
     public int getNextMove() {
         return 0;
@@ -204,8 +211,4 @@ public class TicTacToe implements Game, Observer {
         return new Integer[0][];
     }
 
-    @Override
-    public void update(String message) {
-
-    }
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 public class ServerHandler extends ObservationSubject {
@@ -16,9 +17,11 @@ public class ServerHandler extends ObservationSubject {
     private PrintWriter toServer;
     private BufferedReader fromServer;
 
-    public ServerHandler(){
+    int expectingOKCount = 0;
+    int OKCount = 0;
 
-    }
+    //Threads
+    Thread listenerThread;
 
     /** Start the actual connection */
     public boolean connect(String address, int port){
@@ -49,40 +52,116 @@ public class ServerHandler extends ObservationSubject {
 
     /** Close the connection by closing the sockets and the data streams */
     public void disconnect(){
+        try {
+            listenerThread.interrupt();
 
+            socket.close();
+            toServer.close();
+            fromServer.close();
+        } catch (NullPointerException ex){
+            //ignore
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
     }
 
     /** Receive all incomming messages */
     void listen(){
+        listenerThread = new Thread(()->{
+            try {
+                while (true) {
 
+                    //Wait until a new message has arrived
+                    String message = fromServer.readLine();
+
+                    //In some cases, a message may be null. If so, ignore.
+                    if (message==null)
+                        continue;
+
+                    String[] args = message.split(" ");
+
+                    switch (args[0]){
+                        case "OK":
+                            //Message was received and proccessed succesfully
+                            OKCount++;
+//                            System.out.println("Exected amount ok OK's:"+expectingOKCount+"\tReceived amount of OK's:"+OKCount);
+                            break;
+                        case "ERR":
+                            //Looks like we made a mistake
+                            System.out.println(message);
+                            break;
+                        case "SVR":
+                            //Server has sent important data which has to be processed
+                            notifyObservers(message);
+                            break;
+                        default:
+                            System.out.println(message);
+                    }
+
+                }
+            } catch (SocketException ex){
+
+            } catch (IOException ex){
+                System.out.println("Stopped listening to the server.");
+            }
+        });
+
+        listenerThread.start();
     }
 
     /** Send a message to the server */
-    public String send(String message){
-        return null;
+    public String send(String message, boolean expectsOK){
+        if (expectsOK)
+            expectingOKCount++;
+        toServer.println(message);
+        toServer.flush();
+        return "OK";
     }
 
-
+    public String send(String message){
+        return send(message, false);
+    }
 
 
     /*
      * HELPER COMMANDS
      */
 
-    public String getPlayers(){
-        return null;
+    /** Let the user send a move to the server */
+    public void getPlayers(){
+        send("get playerlist", true);
     }
 
-    public String getGamelist(){
-        return null;
+    public void getGamelist(){
+        send("get gamelist", true);
     }
 
-    public boolean login(){
-        return false;
+    public boolean move(int cell) {
+        send("move "+cell);
+
+        //Check if move was valid
+        return true;
+    }
+
+    public void subscribe(String game){
+        send("subscribe "+game, true);
+    }
+
+    public boolean login(String username){
+        send("login "+username, true);
+        return true;
     }
 
     public void logout(){
+        send("logout");
 
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+
+        disconnect();
     }
 
 }

@@ -7,6 +7,7 @@ import Players.AIPlayer;
 import Players.InputPlayer;
 import Players.Player;
 import javafx.application.Platform;
+import javafx.scene.layout.Pane;
 
 public class GameManager implements GameManagerState {
 
@@ -20,7 +21,7 @@ public class GameManager implements GameManagerState {
     GameManagerState state;
 
     //Connection Management
-    public ConnectionHandler server;
+    public ServerHandler server;
     String username;
     Player player;
     Game game;
@@ -35,15 +36,7 @@ public class GameManager implements GameManagerState {
         setState(getStartState());
     }
 
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public void setServer(ConnectionHandler server) {
+    public void setServer(ServerHandler server) {
         this.server = server;
     }
 
@@ -58,6 +51,10 @@ public class GameManager implements GameManagerState {
     public String getUsername() {
         return username;
     }
+
+    public void setGame(Game game) { this.game = game; }
+
+    public Game getGame() { return game; }
 
     /**
      * State functions

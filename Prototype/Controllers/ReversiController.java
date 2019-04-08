@@ -5,13 +5,9 @@ import States.GameManager;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
-import java.util.Collection;
-import java.util.Collections;
 
 public class ReversiController {
 
@@ -25,14 +21,14 @@ public class ReversiController {
         this.gameManager = gameManager;
     }
 
-    public void goGame(){
+    public void goGame() {
 
         //Get the game from the gameManager
         game = gameManager.getGame();
         game.start();
 
         //Perform the game loop until the game has concluded
-        while (!game.hasEnded()){
+        while (!game.hasEnded()) {
 
             //Receive the move from the player
             int move = game.getNextMove();
@@ -47,16 +43,17 @@ public class ReversiController {
     private EventHandler<ActionEvent> createCellHandler(int i) {
         return event -> tileHandler(i);
     }
-    private void tileHandler (int i){
-        System.out.println("User pressed tile "+i);
+
+    private void tileHandler(int i) {
+        System.out.println("User pressed tile " + i);
     }
 
-    public void initViewCells(){
+    public void initViewCells() {
 
-        for(int x=0;x<8;x++){
-            for(int y=0;y<8;y++){
-                int i = (x%8)+1;
-                i+=y*8;
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                int i = (x % 8) + 1;
+                i += y * 8;
                 i--;
 
                 Button cell = new Button();
@@ -65,7 +62,5 @@ public class ReversiController {
                 gamePane.add(cell, x, y);
             }
         }
-
     }
-
 }
