@@ -145,8 +145,8 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public ArrayList MakeMove(int x, int y) {
-        return null;
+    public int MakeMove(int x, int y) {
+        return 0;
     }
 
     @Override
