@@ -90,8 +90,16 @@ public class Reversi implements Game {
 
         System.out.println("X:"+x+"\tY:"+y);
 
-        moveIsValid(x, y);
-        MakeMove(x, y);
+        if(moveIsValid(coordinate)) {
+            if(playerTurn == player1) {
+                board[x][y] = 1;
+            }
+            else{
+                board[x][y] = 2;
+            }
+        }else{
+            board[x][y] = 0;
+        }
 
         printBoard();
 
@@ -107,7 +115,8 @@ public class Reversi implements Game {
         int depth = 4;
         for(int y = 0; y < n; y++) {
             for(int x = 0; x < n; x++) {
-                if (moveIsValid(x, y)) {
+                int coordinate = (x*8)+y;
+                if (moveIsValid(coordinate)) {
                     Integer[][] tempBoard = new Integer[8][8];
                     for (int f = 0; f < 8; f++) {
                         tempBoard[f] = board[f];
@@ -138,7 +147,12 @@ public class Reversi implements Game {
         else
             player=2;
 
-        Integer[][] tempBoard = board;
+
+        Integer[][] tempBoard = new Integer[8][8];
+        for(int i = 0; i < 8; i++){
+            tempBoard[i] = board[i];
+        }
+
 
         int totctr = 0;
         tempBoard[x][y] = player;
@@ -167,14 +181,17 @@ public class Reversi implements Game {
             totctr += ctr;
         }
         ArrayList l = new ArrayList();
-        System.out.println(tempBoard.getClass());
+       // System.out.println(tempBoard.getClass());
         l.add(tempBoard);
+        //System.out.print(totctr);
         l.add(totctr);
         return l;
     }
 
     /** -- */
-    public boolean moveIsValid(int x, int y) {
+    public boolean moveIsValid(int coordinate) {
+        int x = (int) Math.floor(coordinate / 8);
+        int y = (coordinate % 8);
         if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
             System.out.println("Eén");
             return false;

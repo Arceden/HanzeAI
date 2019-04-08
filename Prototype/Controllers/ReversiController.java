@@ -47,6 +47,7 @@ public class ReversiController {
         while (!game.hasEnded()){
             int move = game.getNextMove();
             game.move(move);
+
 //            game.MakeMove(move);
             game.switchTurns();
         }

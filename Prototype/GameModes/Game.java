@@ -17,7 +17,7 @@ public interface Game {
     public void switchTurns();
 
     /** Check if the specified move is valid */
-    public boolean moveIsValid(int x, int y);
+    public boolean moveIsValid(int coordinate);
 
     /** Start the game by preparing the board and choose who starts (or retreive the starting player if online) */
     public void start();
