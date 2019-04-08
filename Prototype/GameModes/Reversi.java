@@ -17,7 +17,6 @@ public class Reversi implements Game {
     private Player player1;
     private Player player2;
     public Player playerTurn;
-    private String testValue;
 
     private static int n = 8;
     private Integer[] dirx = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -32,15 +31,12 @@ public class Reversi implements Game {
         this.player2 = player2;
         System.out.print(player2.getClass().getSimpleName());
         this.board = InitBoard(board);
-
-
     }
 
 
 
-
+    /** -- */
     public Integer[][] InitBoard(Integer[][] board) {
-
         for(int x = 0; x < 8; x++){
             for(int y =0; y < 8; y++){
                 board[x][y] = 0;
@@ -59,60 +55,64 @@ public class Reversi implements Game {
         }
     }
 
-    public Reversi(){}
-
+    /** -- */
     public void switchTurns(){
-        if(getCurrentPlayer() == player1){
-            playerTurn = player2;
-            if(player2 instanceof AIPlayer){
-               System.out.println(player2.requestMove());
-            }
-        }
-        if(getCurrentPlayer() == player2){
-            playerTurn = player1;
-            if(player1 instanceof AIPlayer){
-                System.out.println(player1.requestMove());
-            }
-        }
+
+        if(playerTurn.getUsername().equalsIgnoreCase(player1.getUsername()))
+            playerTurn=player2;
+        else
+            playerTurn=player1;
+
     }
 
+    /** Get current state of the board */
     public Integer[][] getBoard(){
         return board;
     }
 
     @Override
+    /** Player 1 is first to play */
     public void start() {
-        Random random = new Random();
-        switch (random.nextInt(1))
-        {
-            case 0: playerTurn = player1; break;
-            case 1: playerTurn = player2; break;
-        }
-        System.out.println(this.playerTurn.getUsername());
+        playerTurn=player1;
     }
 
     public int getNextMove(){
+        System.out.println(playerTurn.getUsername());
         return playerTurn.requestMove();
     }
 
     @Override
+    /** TODO: Execute move */
     public boolean move(int coordinate) {
+
+        int x = (int) Math.floor(coordinate / 8);
+        int y = (coordinate % 8);
+
+        System.out.println("X:"+x+"\tY:"+y);
+
+        moveIsValid(x, y);
+        MakeMove(x, y);
+
+        printBoard();
+
         return true;
     }
 
+    /** -- */
     public ArrayList BestMove(Integer[][] board, int player) {
+//        Integer[][] tempBoard = board;
         int maxPoints = 0;
         int mx = -1;
         int my = -1;
         int depth = 4;
         for(int y = 0; y < n; y++) {
             for(int x = 0; x < n; x++) {
-                if (moveIsValid(board, x, y, player)) {
+                if (moveIsValid(x, y)) {
                     Integer[][] tempBoard = new Integer[8][8];
                     for (int f = 0; f < 8; f++) {
                         tempBoard[f] = board[f];
                     }
-                    ArrayList l = MakeMove(tempBoard, x, y, player);
+                    ArrayList l = MakeMove(x, y);
                     tempBoard = (Integer[][]) l.get(0);
                     int totctr = (int) l.get(1);
                     int points = minimax.calculateMove(tempBoard, player, depth, true);
@@ -130,8 +130,16 @@ public class Reversi implements Game {
         return coords;
     }
 
+    /** NOTE: AI */
+    public ArrayList MakeMove(int x, int y) {
+        int player=0;
+        if(playerTurn==player1)
+            player=1;
+        else
+            player=2;
 
-    public ArrayList MakeMove(Integer[][] tempBoard, int x, int y, int player) {
+        Integer[][] tempBoard = board;
+
         int totctr = 0;
         tempBoard[x][y] = player;
         for (int d = 0; d < 8; d++) {
@@ -165,8 +173,8 @@ public class Reversi implements Game {
         return l;
     }
 
-
-    public boolean moveIsValid(Integer[][] board, int x, int y,int player) {
+    /** -- */
+    public boolean moveIsValid(int x, int y) {
         if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
             System.out.println("Eén");
             return false;
@@ -180,20 +188,24 @@ public class Reversi implements Game {
         for (int f = 0; f < n; f++){
             tempBoard[f] = board[f];
         }
-        ArrayList l = MakeMove(tempBoard, x, y, player);
+        ArrayList l = MakeMove(x, y);
         //Integer[][] boardTemp = (Integer[][]) l.get(0);
         int totctr = (int) l.get(1);
         if(totctr == 0) {
             System.out.println("Drie");
             return false;
         }
-        for(Integer[] arr : board){
-            System.out.println(Arrays.toString(arr));
-        }
         return true;
     }
 
+    public void printBoard(){
+        for(Integer[] arr : board){
+            System.out.println(Arrays.toString(arr));
+        }
+    }
+
     @Override
+    /** TODO: Check if game field is full */
     public boolean hasEnded() {
         return false;
     }
@@ -226,6 +238,7 @@ public class Reversi implements Game {
         return "";
     }
 
+    /** -- */
     public static int EvalBoard(Integer[][] board, int player) {
         int tot = 0;
         for(int y = 0; y < n; y++) {
@@ -245,19 +258,5 @@ public class Reversi implements Game {
         }
         return tot;
     }
-
-
-
-
-    public void setTest(String value)
-    {
-        this.testValue = value;
-    }
-
-    public String getTest() {
-        return this.testValue;
-    }
-
-
 
 }

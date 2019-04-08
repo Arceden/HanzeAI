@@ -84,10 +84,13 @@ public class Main extends Application {
         server.registerObserver(lobbyController);
 
 
-        root.setCenter(loginPane);
-        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new AIPlayer("HEkn")));
-        root.setCenter(reversiPane);
-        reversiController.gTest();
+//        root.setCenter(loginPane);
+
+        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new InputPlayer("HEkn")));
+//        root.setCenter(reversiPane);
+//        reversiController.gTest();
+
+        reversiController.goGame();
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
