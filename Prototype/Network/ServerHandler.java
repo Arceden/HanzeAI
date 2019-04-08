@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerHandler extends ObservationSubject {
 
@@ -96,6 +98,7 @@ public class ServerHandler extends ObservationSubject {
                             break;
                         default:
                             System.out.println(message);
+//                            break;
                     }
 
                 }
@@ -162,6 +165,21 @@ public class ServerHandler extends ObservationSubject {
         }
 
         disconnect();
+    }
+
+    public Map<String, String> parseData(String message){
+        message = message.replace("SVR GAME MATCH ", "");
+        message = message.substring(1, message.length()-1);
+        String[] valuePairs = message.split(",");
+
+        Map<String, String> data = new HashMap<>();
+
+        for (String pair: valuePairs){
+            String[] item = pair.split(": ");
+            data.put(item[0].trim(), item[1].trim().substring(1, item[1].length()-1));
+        }
+
+        return data;
     }
 
 }

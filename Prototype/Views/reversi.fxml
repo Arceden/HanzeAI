@@ -8,12 +8,32 @@
 
 <?import com.sun.javafx.scene.control.skin.TableHeaderRow?>
 <?import java.net.URL?>
-<GridPane xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml"
-          fx:controller="Controllers.ReversiController"
-          prefHeight="400.0" prefWidth="600.0" fx:id="gamePane">
+<?import javafx.scene.text.Text?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.ReversiController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <top>
+        <VBox>
+            <HBox>
+                <Text text="Player 1:"/><Label fx:id="lPlayer1"/>
+            </HBox>
+            <HBox>
+                <Text text="Player 2:"/><Label fx:id="lPlayer2"/>
+            </HBox>
+            <HBox>
+                <Label fx:id="lPlayerTurn"/><Text text="'s turn!"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <GridPane fx:id="gamePane">
+
+        </GridPane>
+    </center>
 
     <stylesheets>
         <URL value="@reversi.css"/>
     </stylesheets>
-</GridPane>
+</BorderPane>

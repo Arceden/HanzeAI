@@ -29,6 +29,10 @@ public interface Game {
     public void setPlayer1(Player player1);
     public void setPlayer2(Player player2);
 
+    /** Get player data */
+    public Player getPlayer1();
+    public Player getPlayer2();
+
     public String getName();
     public Player getCurrentPlayer();
     public String getCurrentStatus();

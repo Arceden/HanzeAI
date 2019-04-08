@@ -6,6 +6,7 @@ import Controllers.TicTacToeController;
 import Network.ServerHandler;
 import Observer.Observer;
 
+import Players.Player;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -133,6 +134,13 @@ public class Main extends Application {
                     break;
                 case "MATCH":
                     Platform.runLater(()->root.setCenter(matchPane));
+                    break;
+                case "Reversi":
+                    Platform.runLater(()->root.setCenter(reversiPane));
+                    reversiController.refresh();
+                    break;
+                default:
+                    System.err.println("Unknown view: "+message);
                     break;
             }
         }

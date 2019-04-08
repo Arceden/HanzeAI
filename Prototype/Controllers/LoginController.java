@@ -39,9 +39,9 @@ public class LoginController extends ObservationSubject {
         String username = tfUsername.getText();
 
         if(gameManager.login(username)){
+            gameManager.setUsername(username);
             System.out.println("Logged in as "+username);
             notifyObservers("LOBBY");
-            gameManager.setUsername(username);
         } else {
             System.out.println("Could not login.");
         }

@@ -1,7 +1,9 @@
 package Players;
 
 public class NetworkPlayer implements Player {
+
     private String username;
+
     public NetworkPlayer(String username){
         this.username=username;
     }

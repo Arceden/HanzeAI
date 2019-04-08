@@ -141,6 +141,11 @@ public class TicTacToe implements Game {
     public final String name = "TicTacToe";
     private int[][] cells = new int[3][3];
 
+    public TicTacToe(Player player1, Player player2){
+        this.player1=player1;
+        this.player2=player2;
+    }
+
     @Override
     public int getNextMove() {
         return 0;
@@ -211,4 +216,13 @@ public class TicTacToe implements Game {
         return new Integer[0][];
     }
 
+    @Override
+    public Player getPlayer1() {
+        return null;
+    }
+
+    @Override
+    public Player getPlayer2() {
+        return null;
+    }
 }

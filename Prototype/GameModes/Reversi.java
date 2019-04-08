@@ -27,9 +27,12 @@ public class Reversi implements Game {
     private AI minimax = new Minimax(this);
 
     public Reversi(Player player1, Player player2){
+        this();
         this.player1 = player1;
         this.player2 = player2;
-        System.out.print(player2.getClass().getSimpleName());
+    }
+
+    public Reversi(){
         this.board = InitBoard(board);
     }
 
@@ -43,7 +46,7 @@ public class Reversi implements Game {
             }
         }
         if(n % 2 == 0){
-            System.out.println(n);
+//            System.out.println(n);
             int z = (n - 2) / 2;
             board[z][z] = 2;
             board[n - 1 - z][z] = 1;
@@ -74,10 +77,11 @@ public class Reversi implements Game {
     /** Player 1 is first to play */
     public void start() {
         playerTurn=player1;
+        System.out.println("First to play: "+playerTurn.getUsername());
+        System.out.println("First to play: "+getCurrentPlayer().getUsername());
     }
 
     public int getNextMove(){
-        System.out.println(playerTurn.getUsername());
         return playerTurn.requestMove();
     }
 
@@ -256,4 +260,13 @@ public class Reversi implements Game {
         return tot;
     }
 
+    @Override
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    @Override
+    public Player getPlayer2() {
+        return player2;
+    }
 }
