@@ -35,6 +35,14 @@ public class GameManager implements GameManagerState {
         setState(getStartState());
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public void setServer(ConnectionHandler server) {
         this.server = server;
     }

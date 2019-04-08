@@ -3,6 +3,7 @@ package GameModes;
 import Observer.Observer;
 import Players.Player;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class TicTacToe implements Game, Observer {
@@ -48,7 +49,17 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public boolean moveIsValid(int coordinate) {
+    public ArrayList MakeMove(Integer[][] tempBoard, int x, int y, int player) {
+        return null;
+    }
+
+    @Override
+    public void switchTurns() {
+
+    }
+
+    @Override
+    public boolean moveIsValid(Integer[][] board, int x, int y, int coordinate) {
         return false;
     }
 
@@ -63,8 +74,8 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public String getCurrentPlayer() {
-        return playerTurn.getUsername();
+    public Player getCurrentPlayer() {
+        return playerTurn;
     }
 
     @Override
@@ -81,6 +92,11 @@ public class TicTacToe implements Game, Observer {
     public String getCurrentStatus()
     {
         return "";
+    }
+
+    @Override
+    public Integer[][] getBoard() {
+        return new Integer[0][];
     }
 
 

@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 import java.util.Scanner;
 
 public class InputPlayer implements Player {
@@ -8,7 +10,6 @@ public class InputPlayer implements Player {
 
     public InputPlayer(String username){
         this.username = username;
-
         scanner = new Scanner(System.in);
     }
 

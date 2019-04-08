@@ -1,12 +1,17 @@
 import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
+import Controllers.ReversiController;
+import GameModes.Reversi;
 import Network.ConnectionHandler;
 import Network.ServerHandler;
 import Observer.Observer;
+import Players.AIPlayer;
+import Players.InputPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,10 +24,12 @@ public class Main extends Application {
     LoginController loginController;
     LobbyController lobbyController;
     MatchController matchController;
+    ReversiController reversiController;
 
     Pane loginPane;
     Pane lobbyPane;
     Pane matchPane;
+    Pane reversiPane;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -57,11 +64,16 @@ public class Main extends Application {
         matchPane = matchLoader.load();
         matchController = matchLoader.getController();
 
+        FXMLLoader reversiLoader = new FXMLLoader(getClass().getResource("Views/reversi.fxml"));
+        reversiPane = reversiLoader.load();
+        reversiController = reversiLoader.getController();
+
 
         //Assign the models to the game managers
         loginController.setGameManager(gameManager);
         lobbyController.setGameManager(gameManager);
         matchController.setGameManager(gameManager);
+        reversiController.setGameManager(gameManager);
 
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
@@ -73,6 +85,9 @@ public class Main extends Application {
 
 
         root.setCenter(loginPane);
+        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new AIPlayer("HEkn")));
+        root.setCenter(reversiPane);
+        reversiController.gTest();
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
