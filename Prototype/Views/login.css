@@ -1,0 +1,9 @@
+VBox {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+    -fx-padding: 10;
+}
+
+GridPane {
+    -fx-alignment: center;
+}

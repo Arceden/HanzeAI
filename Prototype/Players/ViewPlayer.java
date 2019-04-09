@@ -1,10 +1,10 @@
 package Players;
 
-public class NetworkPlayer implements Player {
+public class ViewPlayer implements Player {
 
     private String username;
 
-    public NetworkPlayer(String username){
+    public ViewPlayer(String username){
         this.username=username;
     }
 
@@ -14,15 +14,13 @@ public class NetworkPlayer implements Player {
     }
 
     @Override
+    /** Dont use this method. The move is being received at the controller */
     public int requestMove() {
-        //Observe the server messages for a move
-
-        //Return the move
         return 0;
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
+
 }

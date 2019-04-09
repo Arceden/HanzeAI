@@ -24,8 +24,7 @@ public class InLobbyState implements GameManagerState {
 
     @Override
     public void disconnect() {
-        System.out.println("Attempting to logout..");
-        gameManager.server.send("logout");
+        gameManager.server.logout();
         gameManager.setState(gameManager.getStartState());
     }
 

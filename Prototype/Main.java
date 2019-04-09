@@ -2,8 +2,14 @@ import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
 import Controllers.ReversiController;
-import Network.ConnectionHandler;
+import Controllers.TicTacToeController;
+import GameModes.Reversi;
+import Network.ServerHandler;
 import Observer.Observer;
+
+import Players.InputPlayer;
+import Players.Player;
+import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -14,17 +20,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+
 public class Main extends Application {
 
     LoginController loginController;
     LobbyController lobbyController;
     MatchController matchController;
     ReversiController reversiController;
+    TicTacToeController ticTacToeController;
 
     Pane loginPane;
     Pane lobbyPane;
     Pane matchPane;
     Pane reversiPane;
+    Pane ticTacToePane;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -35,7 +45,7 @@ public class Main extends Application {
         root.setBottom(lStatus);
 
         //Create the main variables
-        ConnectionHandler server = new ConnectionHandler();
+        ServerHandler server = new ServerHandler();
         GameManager gameManager = new GameManager();
         ViewHandler viewHandler = new ViewHandler(root);
         ServerStatus serverStatus = new ServerStatus(lStatus);
@@ -59,34 +69,43 @@ public class Main extends Application {
         matchPane = matchLoader.load();
         matchController = matchLoader.getController();
 
+        /* Reversi Screen */
         FXMLLoader reversiLoader = new FXMLLoader(getClass().getResource("Views/reversi.fxml"));
         reversiPane = reversiLoader.load();
         reversiController = reversiLoader.getController();
 
+        /* Tic Tac Toe Screen */
+        FXMLLoader ticTacToeLoader = new FXMLLoader(getClass().getResource("Views/ticTacToeView.fxml"));
+        ticTacToePane = ticTacToeLoader.load();
+        ticTacToeController = ticTacToeLoader.getController();
 
         //Assign the models to the game managers
         loginController.setGameManager(gameManager);
         lobbyController.setGameManager(gameManager);
         matchController.setGameManager(gameManager);
         reversiController.setGameManager(gameManager);
+        ticTacToeController.setGameManager(gameManager);
+
 
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
         lobbyController.registerObserver(viewHandler);
         matchController.registerObserver(viewHandler);
+        ticTacToeController.registerObserver(viewHandler);
 
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
+        server.registerObserver(reversiController);
 
-
-        reversiController.initViewCells();
-        root.setCenter(reversiPane);
-
-//        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new InputPlayer("HEkn")));
+//        server.connect("localhost", 7789);
+//        server.login("Arnold");
+//        gameManager.setGame(new Reversi(new ViewPlayer("Barry"), new ViewPlayer("Arnold")));
 //        root.setCenter(reversiPane);
-//        reversiController.gTest();
+//        reversiController.refresh();
 
-//        reversiController.goGame();
+
+        //Set the first pane
+        root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
@@ -94,6 +113,13 @@ public class Main extends Application {
         primaryStage.setTitle("Game Client");
         primaryStage.show();
 
+
+        //Handle window closing
+        primaryStage.setOnCloseRequest(e->{
+            lobbyController.stopThreads();
+            server.send("forfeit");
+            server.disconnect();
+        });
     }
 
     private class ViewHandler implements Observer {
@@ -115,6 +141,13 @@ public class Main extends Application {
                     break;
                 case "MATCH":
                     Platform.runLater(()->root.setCenter(matchPane));
+                    break;
+                case "Reversi":
+                    Platform.runLater(()->root.setCenter(reversiPane));
+                    reversiController.refresh();
+                    break;
+                default:
+                    System.err.println("Unknown view: "+message);
                     break;
             }
         }
