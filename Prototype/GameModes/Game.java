@@ -16,6 +16,8 @@ public interface Game {
 
     public void switchTurns();
 
+    public boolean validMovesLeft();
+
     /** Check if the specified move is valid */
     public boolean moveIsValid(int coordinate);
 

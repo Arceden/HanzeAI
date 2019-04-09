@@ -155,6 +155,11 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
+    public boolean validMovesLeft() {
+        return false;
+    }
+
+    @Override
     public boolean moveIsValid(int coordinate) {
         return false;
     }

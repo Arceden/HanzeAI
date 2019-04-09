@@ -45,11 +45,13 @@ public class ReversiController {
         game = gameManager.getGame();
         game.start();
         while (!game.hasEnded()){
-            int move = game.getNextMove();
-            game.move(move);
+            if(game.validMovesLeft()) {
+                int move = game.getNextMove();
+                game.move(move);
+            }
 
 //            game.MakeMove(move);
-            game.switchTurns();
+            //game.switchTurns();
         }
 
     }

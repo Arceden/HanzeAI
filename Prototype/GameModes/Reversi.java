@@ -16,14 +16,17 @@ public class Reversi implements Game {
 
     private Player player1;
     private Player player2;
-    public Player playerTurn;
+    public Player playerTurn = player2;
+
+    private boolean player1Pass;
+    private boolean player2Pass;
 
     private static int n = 8;
     private Integer[] dirx = {-1, 0, 1, -1, 1, -1, 0, 1};
     private Integer[] diry = {-1, -1, -1, 0, 0, 1, 1, 1};
 
     public final String name = "Reversi";
-    private Integer[][] board = new Integer[8][8];
+    private Integer[][] board = new Integer[n][n];
     private AI minimax = new Minimax(this);
 
     public Reversi(Player player1, Player player2){
@@ -37,8 +40,8 @@ public class Reversi implements Game {
 
     /** -- */
     public Integer[][] InitBoard(Integer[][] board) {
-        for(int x = 0; x < 8; x++){
-            for(int y =0; y < 8; y++){
+        for(int x = 0; x < n; x++){
+            for(int y =0; y < n; y++){
                 board[x][y] = 0;
             }
         }
@@ -85,17 +88,19 @@ public class Reversi implements Game {
     /** TODO: Execute move */
     public boolean move(int coordinate) {
 
-        int x = (int) Math.floor(coordinate / 8);
-        int y = (coordinate % 8);
+        int x = (int) Math.floor(coordinate / n);
+        int y = (coordinate % n);
 
         System.out.println("X:"+x+"\tY:"+y);
 
         if(moveIsValid(coordinate)) {
             if(playerTurn == player1) {
                 board[x][y] = 1;
+                switchTurns();
             }
             else{
                 board[x][y] = 2;
+                switchTurns();
             }
         }else{
             board[x][y] = 0;
@@ -114,10 +119,10 @@ public class Reversi implements Game {
         int depth = 4;
         for(int y = 0; y < n; y++) {
             for(int x = 0; x < n; x++) {
-                int coordinate = (x*8)+y;
+                int coordinate = (x*n)+y;
                 if (moveIsValid(coordinate)) {
-                    Integer[][] tempBoard = new Integer[8][8];
-                    for (int f = 0; f < 8; f++) {
+                    Integer[][] tempBoard = new Integer[n][n];
+                    for (int f = 0; f < n; f++) {
                         tempBoard[f] = board[f];
                     }
                     int points = minimax.calculateMove(tempBoard, player, depth, true);
@@ -144,10 +149,13 @@ public class Reversi implements Game {
             player=2;
 
         int totctr = 0;
-
-        for (int d = 0; d < 8; d++) {
+        Integer[][] tempboard = new Integer[n][n];
+        for(int i = 0; i < n; i++){
+            tempboard[i] = board[i];
+        }
+        for (int d = 0; d < n; d++) {
             int ctr = 0;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < n; i++) {
                 int dx = x + dirx[d] * (i + 1);
                 int dy = y + diry[d] * (i + 1);
                 if (dx < 0 || dx > n - 1 || dy < 0 || dy > n - 1) {
@@ -175,25 +183,61 @@ public class Reversi implements Game {
 
     /** -- */
     public boolean moveIsValid(int coordinate) {
-        int x = (int) Math.floor(coordinate / 8);
-        int y = (coordinate % 8);
+        int x = (int) Math.floor(coordinate / n);
+        int y = (coordinate % n);
         if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
-            System.out.println("Eén");
+            //System.out.println("Eén");
             return false;
         }
         if(board[x][y] != 0) {
-            System.out.println("Twee");
+            //System.out.println("Twee");
             return false;
         }
 
         int totctr = MakeMove(x, y);
 
         if(totctr == 0) {
-            System.out.println("Drie");
+            //System.out.println("Drie");
             return false;
         }
         return true;
     }
+
+
+
+
+    public boolean calculateValidMoves(Integer[][] board){
+        Integer[][] valid = new Integer[8][8];
+        for(int x = 0; x < n; x++){
+            for(int y = 0; y < n; y++){
+                valid[x][y] = 0;
+            }
+        }
+        for(int row = 0; row < n; row++){
+            for(int column = 0; column < n; column++){
+                if(valid[row][column] == 0){
+                    for(int dx : dirx){
+                        for(int dy : diry){
+                            boolean v = valid_move(dirx, diry, row, column, board);
+                            if(v == true){
+                                valid[row][column] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        return true;
+    }
+
+
+
+
+
+
 
     public void printBoard(){
         for(Integer[] arr : board){
@@ -204,6 +248,31 @@ public class Reversi implements Game {
     @Override
     /** TODO: Check if game field is full */
     public boolean hasEnded() {
+        if(player1Pass && player2Pass){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validMovesLeft(){
+        for(int x = 0; x < n; x++){
+            for(int y = 0; y < n; y++){
+                if(moveIsValid((x*n)+y)){
+                    player1Pass = false;
+                    player2Pass = false;
+                    return true;
+                }
+            }
+        }
+        System.out.println("No possible moves left for this player!");
+        if (playerTurn == player1) {
+            player1Pass = true;
+            switchTurns();
+        }
+        else{
+            player2Pass = true;
+            switchTurns();
+        }
         return false;
     }
 
