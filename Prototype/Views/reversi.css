@@ -1,0 +1,5 @@
+Button {
+    -fx-background-color: green;
+    -fx-border-color: black;
+    -fx-padding: 10;
+}

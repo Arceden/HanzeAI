@@ -2,16 +2,11 @@ import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.MatchController;
 import Controllers.ReversiController;
-import GameModes.Reversi;
 import Network.ConnectionHandler;
-import Network.ServerHandler;
 import Observer.Observer;
-import Players.AIPlayer;
-import Players.InputPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -84,13 +79,14 @@ public class Main extends Application {
         server.registerObserver(lobbyController);
 
 
-//        root.setCenter(loginPane);
+        reversiController.initViewCells();
+        root.setCenter(reversiPane);
 
-        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new InputPlayer("HEkn")));
+//        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new InputPlayer("HEkn")));
 //        root.setCenter(reversiPane);
 //        reversiController.gTest();
 
-        reversiController.goGame();
+//        reversiController.goGame();
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
