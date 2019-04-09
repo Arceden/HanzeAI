@@ -3,10 +3,13 @@ import Controllers.LoginController;
 import Controllers.MatchController;
 import Controllers.ReversiController;
 import Controllers.TicTacToeController;
+import GameModes.Reversi;
 import Network.ServerHandler;
 import Observer.Observer;
 
+import Players.InputPlayer;
 import Players.Player;
+import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,6 +19,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
+import java.util.Arrays;
 
 public class Main extends Application {
 
@@ -90,12 +95,13 @@ public class Main extends Application {
 
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
+        server.registerObserver(reversiController);
 
-
-//        gameManager.setGame(new Reversi(new InputPlayer("Barry"), new InputPlayer("HEkn")));
+//        server.connect("localhost", 7789);
+//        server.login("Arnold");
+//        gameManager.setGame(new Reversi(new ViewPlayer("Barry"), new ViewPlayer("Arnold")));
 //        root.setCenter(reversiPane);
-//        reversiController.gTest();
-//        reversiController.goGame();
+//        reversiController.refresh();
 
 
         //Set the first pane
@@ -111,6 +117,7 @@ public class Main extends Application {
         //Handle window closing
         primaryStage.setOnCloseRequest(e->{
             lobbyController.stopThreads();
+            server.send("forfeit");
             server.disconnect();
         });
     }

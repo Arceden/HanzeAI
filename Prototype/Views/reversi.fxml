@@ -28,7 +28,7 @@
         </VBox>
     </top>
     <center>
-        <GridPane fx:id="gamePane">
+        <GridPane fx:id="gamePane" styleClass="gamePane">
 
         </GridPane>
     </center>

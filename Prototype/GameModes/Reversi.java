@@ -77,8 +77,8 @@ public class Reversi implements Game {
     /** Player 1 is first to play */
     public void start() {
         playerTurn=player1;
-        System.out.println("First to play: "+playerTurn.getUsername());
-        System.out.println("First to play: "+getCurrentPlayer().getUsername());
+//        System.out.println("First to play: "+playerTurn.getUsername());
+//        System.out.println("First to play: "+getCurrentPlayer().getUsername());
     }
 
     public int getNextMove(){

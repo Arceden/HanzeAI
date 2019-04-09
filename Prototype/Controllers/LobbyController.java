@@ -178,7 +178,7 @@ public class LobbyController extends ObservationSubject implements Observer {
      */
     private void startMatch(String message){
         //Parse the server data into a map
-        Map<String, String> data = gameManager.server.parseData(message);
+        Map<String, String> data = gameManager.server.parseData("SVR GAME MATCH ", message);
         Game game=null;
 
         String GAMETYPE = data.get("GAMETYPE");
@@ -274,7 +274,7 @@ public class LobbyController extends ObservationSubject implements Observer {
                         case "LOSS":
                             notifyObservers("LOBBY");
                             break;
-                        case "TIE":
+                        case "DRAW":
                             notifyObservers("LOBBY");
                             break;
                         case "CHALLENGE":

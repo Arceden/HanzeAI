@@ -167,8 +167,8 @@ public class ServerHandler extends ObservationSubject {
         disconnect();
     }
 
-    public Map<String, String> parseData(String message){
-        message = message.replace("SVR GAME MATCH ", "");
+    public Map<String, String> parseData(String prefix, String message){
+        message = message.replace(prefix, "");
         message = message.substring(1, message.length()-1);
         String[] valuePairs = message.split(",");
 

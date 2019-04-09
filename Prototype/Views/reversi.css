@@ -1,5 +1,12 @@
 Button {
     -fx-background-color: green;
     -fx-border-color: black;
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+}
+
+.gamePane {
+    -fx-hgap: 2;
+    -fx-vgap: 2;
     -fx-padding: 10;
 }
