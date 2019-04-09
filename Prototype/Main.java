@@ -1,15 +1,10 @@
 import Controllers.LobbyController;
 import Controllers.LoginController;
-import Controllers.MatchController;
 import Controllers.ReversiController;
 import Controllers.TicTacToeController;
-import GameModes.Reversi;
 import Network.ServerHandler;
 import Observer.Observer;
 
-import Players.InputPlayer;
-import Players.Player;
-import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -26,7 +21,6 @@ public class Main extends Application {
 
     LoginController loginController;
     LobbyController lobbyController;
-    MatchController matchController;
     ReversiController reversiController;
     TicTacToeController ticTacToeController;
 
@@ -64,11 +58,6 @@ public class Main extends Application {
         lobbyPane = lobbyLoader.load();
         lobbyController = lobbyLoader.getController();
 
-        /* Match Screen */
-        FXMLLoader matchLoader = new FXMLLoader(getClass().getResource("Views/match.fxml"));
-        matchPane = matchLoader.load();
-        matchController = matchLoader.getController();
-
         /* Reversi Screen */
         FXMLLoader reversiLoader = new FXMLLoader(getClass().getResource("Views/reversi.fxml"));
         reversiPane = reversiLoader.load();
@@ -82,7 +71,6 @@ public class Main extends Application {
         //Assign the models to the game managers
         loginController.setGameManager(gameManager);
         lobbyController.setGameManager(gameManager);
-        matchController.setGameManager(gameManager);
         reversiController.setGameManager(gameManager);
         ticTacToeController.setGameManager(gameManager);
 
@@ -90,7 +78,6 @@ public class Main extends Application {
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
         lobbyController.registerObserver(viewHandler);
-        matchController.registerObserver(viewHandler);
         ticTacToeController.registerObserver(viewHandler);
 
         //Assign the controller to the server handler
@@ -148,6 +135,9 @@ public class Main extends Application {
                 case "Reversi":
                     Platform.runLater(()->root.setCenter(reversiPane));
                     reversiController.refresh();
+                    break;
+                case "Tic-tac-toe":
+                    Platform.runLater(()->root.setCenter(ticTacToePane));
                     break;
                 default:
                     System.err.println("Unknown view: "+message);

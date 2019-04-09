@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -212,6 +213,10 @@ public class ReversiController implements Observer {
     }
 
     public void stopThreads(){
-        gameThread.interrupt();
+        try {
+            gameThread.interrupt();
+        } catch (NullPointerException ex){
+            //ignore
+        }
     }
 }
