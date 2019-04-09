@@ -29,6 +29,7 @@ public class ReversiController implements Observer {
     private int networkCell;
     private Thread gameThread=null;
     private Button[][] cells = new Button[8][8];
+    private boolean running;
 
     @FXML
     GridPane gamePane;
@@ -45,6 +46,8 @@ public class ReversiController implements Observer {
 
     public void refresh(){
 
+        running=true;
+
         game = gameManager.getGame();
         game.start();
 
@@ -58,51 +61,64 @@ public class ReversiController implements Observer {
 
     }
 
+    public void moveHandler(){
+
+        gameThread = new Thread(()->{
+
+            //Make sure the client is the current player
+            if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+                game.switchTurns();
+
+            //Show the current player
+            Platform.runLater(()->{
+                lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
+            });
+
+            int move;
+
+            if(game.getCurrentPlayer() instanceof ViewPlayer){
+                pressedCell=-1;
+                while (pressedCell<0&&running){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex){
+                        //ignore
+                    }
+                }
+                move=pressedCell;
+            } else {
+                move = game.getNextMove();
+            }
+
+            if (game.moveIsValid(move)){
+
+                game.move(move);
+                gameManager.server.move(move);
+                game.switchTurns();
+
+                Platform.runLater(()->{
+                    lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
+                });
+
+            } else {
+                clientMove();
+            }
+
+            updateBoard();
+            Thread.currentThread().interrupt();
+
+        });
+
+        gameThread.start();
+
+    }
+
     /**
      * The server gave the "YOURTURN" message.
      */
     private void clientMove(){
 
-        //Make sure the client is the current player
-        if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
-            game.switchTurns();
-
-        //Show the current player
-        Platform.runLater(()->{
-            lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
-        });
-
-        int move;
-
-        if(game.getCurrentPlayer() instanceof ViewPlayer){
-            pressedCell=-1;
-            while (pressedCell<0){
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ex){
-                    //ignore
-                }
-            }
-            move=pressedCell;
-        } else {
-            move = game.getNextMove();
-        }
-
-        if (game.moveIsValid(move)){
-
-            game.move(move);
-            gameManager.server.move(move);
-            game.switchTurns();
-
-            Platform.runLater(()->{
-                lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
-            });
-
-        } else {
-            clientMove();
-        }
-
-        updateBoard();
+        moveHandler();
 
     }
 
@@ -156,10 +172,10 @@ public class ReversiController implements Observer {
                             circle = null;
                             break;
                         case 1:
-                            circle.setFill(Color.WHITE);
+                            circle.setFill(Color.BLACK);
                             break;
                         case 2:
-                            circle.setFill(Color.BLACK);
+                            circle.setFill(Color.WHITE);
                     }
 
                     cell.setGraphic(circle);
@@ -193,6 +209,9 @@ public class ReversiController implements Observer {
                     break;
             }
         }
+    }
 
+    public void stopThreads(){
+        gameThread.interrupt();
     }
 }

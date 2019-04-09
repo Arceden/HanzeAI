@@ -17,10 +17,10 @@
     <top>
         <VBox>
             <HBox>
-                <Text text="Player 1:"/><Label fx:id="lPlayer1"/>
+                <Text text="BLACK: "/><Label fx:id="lPlayer1"/>
             </HBox>
             <HBox>
-                <Text text="Player 2:"/><Label fx:id="lPlayer2"/>
+                <Text text="WHITE:"/><Label fx:id="lPlayer2"/>
             </HBox>
             <HBox>
                 <Label fx:id="lPlayerTurn"/><Text text="'s turn!"/>

@@ -117,8 +117,11 @@ public class Main extends Application {
         //Handle window closing
         primaryStage.setOnCloseRequest(e->{
             lobbyController.stopThreads();
+            reversiController.stopThreads();
             server.send("forfeit");
             server.disconnect();
+
+            System.exit(1);
         });
     }
 
