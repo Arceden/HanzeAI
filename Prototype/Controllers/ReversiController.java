@@ -44,89 +44,75 @@ public class ReversiController implements Observer {
     }
 
     public void refresh(){
+
+        game = gameManager.getGame();
+        game.start();
+
         initViewCells();
-        goGame();
-    }
+        updateBoard();
 
-    public void goGame() {
-
-        gameThread = new Thread(()->{
-
-            //Get the game from the gameManager
-            game = gameManager.getGame();
-            game.start();
-
-            Platform.runLater(()->{
-                lPlayer1.setText(game.getPlayer1().getUsername());
-                lPlayer2.setText(game.getPlayer2().getUsername());
-            });
-
-            updateBoard();
-
-            //Perform the game loop until the game has concluded
-            while (!game.hasEnded()) {
-
-                //Set the cell watcher back to 0
-                pressedCell = -1;
-                networkCell = -1;
-
-                //Update the current player's name
-                Platform.runLater(()->{
-                    lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
-                });
-
-                //Receive the move from the player
-                int move;
-                if (game.getCurrentPlayer() instanceof ViewPlayer){
-                    //Wait for button input
-                    while (pressedCell<0){
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ex){
-                            //ignore
-                        }
-                    }
-                    move=pressedCell;
-                } else if (game.getCurrentPlayer() instanceof NetworkPlayer){
-                    //Get move from the network
-                    while (networkCell<0){
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException ex){
-                            //ignore
-                        }
-                    }
-                    move=networkCell;
-
-                } else {
-                    move = game.getNextMove();
-                }
-
-
-                //Check if its you
-                if(game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername())){
-                    //Check move
-                    if(game.moveIsValid(move)) {
-                        game.move(move);
-                        gameManager.server.move(move);
-
-                        //Switch the player turns
-                        game.switchTurns();
-                    }
-                } else {
-                    game.move(move);
-                    game.switchTurns();
-                }
-
-
-                //Update the actual view with the new data
-                updateBoard();
-            }
-
-            gameThread.interrupt();
+        Platform.runLater(()->{
+            lPlayer1.setText(game.getPlayer1().getUsername());
+            lPlayer2.setText(game.getPlayer2().getUsername());
         });
 
-        gameThread.start();
+    }
+
+    /**
+     * The server gave the "YOURTURN" message.
+     */
+    private void clientMove(){
+
+        //Make sure the client is the current player
+        if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+            game.switchTurns();
+
+        //Show the current player
+        Platform.runLater(()->{
+            lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
+        });
+
+        int move;
+
+        if(game.getCurrentPlayer() instanceof ViewPlayer){
+            pressedCell=-1;
+            while (pressedCell<0){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex){
+                    //ignore
+                }
+            }
+            move=pressedCell;
+        } else {
+            move = game.getNextMove();
+        }
+
+        if (game.moveIsValid(move)){
+
+            game.move(move);
+            gameManager.server.move(move);
+            game.switchTurns();
+
+            Platform.runLater(()->{
+                lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
+            });
+
+        } else {
+            clientMove();
+        }
+
+        updateBoard();
+
+    }
+
+    /**
+     * Received a "MOVE" message from the network
+     */
+    private void networkBoiMove(int move){
+
+        game.move(move);
+        updateBoard();
 
     }
 
@@ -194,10 +180,11 @@ public class ReversiController implements Observer {
                             //Received a new move
                             Map<String, String> data = gameManager.server.parseData("SVR GAME MOVE ", message);
                             networkCell = Integer.parseInt(data.get("MOVE"));
-                            System.out.println("Received move: "+networkCell);
+                            networkBoiMove(networkCell);
                             break;
                         case "YOURTURN":
                             //Your turn!
+                            clientMove();
                             break;
                         default:
                             System.out.println(message);

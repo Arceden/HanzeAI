@@ -210,32 +210,32 @@ public class Reversi implements Game {
 
 
 
-    public boolean calculateValidMoves(Integer[][] board){
-        Integer[][] valid = new Integer[8][8];
-        for(int x = 0; x < n; x++){
-            for(int y = 0; y < n; y++){
-                valid[x][y] = 0;
-            }
-        }
-        for(int row = 0; row < n; row++){
-            for(int column = 0; column < n; column++){
-                if(valid[row][column] == 0){
-                    for(int dx : dirx){
-                        for(int dy : diry){
-                            boolean v = valid_move(dirx, diry, row, column, board);
-                            if(v == true){
-                                valid[row][column] = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-
-        return true;
-    }
+//    public boolean calculateValidMoves(Integer[][] board){
+//        Integer[][] valid = new Integer[8][8];
+//        for(int x = 0; x < n; x++){
+//            for(int y = 0; y < n; y++){
+//                valid[x][y] = 0;
+//            }
+//        }
+//        for(int row = 0; row < n; row++){
+//            for(int column = 0; column < n; column++){
+//                if(valid[row][column] == 0){
+//                    for(int dx : dirx){
+//                        for(int dy : diry){
+//                            boolean v = valid_move(dirx, diry, row, column, board);
+//                            if(v == true){
+//                                valid[row][column] = 1;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//
+//        return true;
+//    }
 
 
 
