@@ -44,7 +44,7 @@ public class Reversi implements Game {
     }
 
     @Override
-    public String getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return null;
     }
 
