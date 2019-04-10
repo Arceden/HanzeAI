@@ -12,8 +12,6 @@ public interface Game {
     /** Execute the move and return true if it has been successfully executed */
     public boolean move(int coordinate);
 
-    public int MakeMove(int x, int y);
-
     public void switchTurns();
 
     public boolean validMovesLeft();

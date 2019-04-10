@@ -95,14 +95,14 @@ public class Main extends Application {
         gameManager.setGame(new TicTacToe(new InputPlayer("Rick"), new InputPlayer("Arnold")));
         //Set the first pane
 
-        ticTacToeController.goGame();
+        ticTacToeController.goTest();
         root.setCenter(ticTacToePane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Game Client");
-        primaryStage.show();
+//        primaryStage.setScene(scene);
+//        primaryStage.setTitle("Game Client");
+//        primaryStage.show();
 
 
         //Handle window closing

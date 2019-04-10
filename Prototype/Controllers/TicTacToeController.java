@@ -59,6 +59,20 @@ public class TicTacToeController extends ObservationSubject {
         }
     }
 
+    public void goTest(){
+        game = gameManager.getGame();
+        game.start();
+
+        game.move(0);
+        game.move(4);
+        game.move(1);
+        game.move(5);
+        game.move(2);
+
+        System.out.println(game.hasEnded());
+
+    }
+
     @FXML
     public void methodClickHandler()
     {

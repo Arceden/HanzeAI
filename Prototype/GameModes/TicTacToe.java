@@ -13,6 +13,8 @@ public class TicTacToe implements Game {
     private Player player2;
     public Player playerTurn;
 
+    boolean running;
+
     public final String name = "TicTacToe";
 
     private static int n = 3;
@@ -22,12 +24,8 @@ public class TicTacToe implements Game {
         this.player1 = player1;
         this.player2 = player2;
         playerTurn=player1;
+        running=true;
         this.board = initBoard(board);
-    }
-
-    @Override
-    public int MakeMove(int x, int y) {
-        return 0;
     }
 
     @Override
@@ -37,25 +35,27 @@ public class TicTacToe implements Game {
         int x = (int) Math.floor(coordinate / 3);
         int y = (coordinate % 3);
 
-        System.out.println("Coordinate: "+ coordinate);
-
         int playerNum=0;
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
 
-        if(gameLogic(playerNum, y, x))
+
+        if(board[x][y]!=0)
+            return false;
+
+        board[x][y] = playerNum;
+
+        if(gameLogic(playerNum, x, y))
         {
+            running=false;
             System.out.println("We have a winner");
         }
-        else
-        {
+        else {
             System.out.println("x : " + x);
             System.out.println("y : " + y);
         }
 
-        board[x][y] = playerNum;
         switchTurns();
-
         return true;
     }
 
@@ -84,7 +84,7 @@ public class TicTacToe implements Game {
 
     @Override
     public boolean hasEnded() {
-        return false;
+        return !running;
     }
 
     private boolean gameLogic(int input, int row, int col)
