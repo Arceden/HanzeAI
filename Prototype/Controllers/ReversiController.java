@@ -2,13 +2,9 @@ package Controllers;
 
 import GameModes.Game;
 import Observer.Observer;
-import Players.AIPlayer;
-import Players.InputPlayer;
-import Players.NetworkPlayer;
 import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,7 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.io.IOException;
 import java.util.Map;
 
 
@@ -67,7 +62,7 @@ public class ReversiController implements Observer {
         gameThread = new Thread(()->{
 
             //Make sure the client is the current player
-            if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+            if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getUsername()))
                 game.switchTurns();
 
             //Show the current player
@@ -187,6 +182,9 @@ public class ReversiController implements Observer {
 
     @Override
     public void update(String message) {
+
+        if(!running)
+            return;
 
         String[] args = message.split(" ");
         if(args[0].equalsIgnoreCase("SVR")) {

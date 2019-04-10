@@ -10,3 +10,12 @@
     -fx-background-color: radial-gradient( radius 100%, white, lightyellow, lawngreen);
     -fx-text-fill: red;
 }
+
+.gameBoard Button {
+    -fx-pref-height: 100;
+    -fx-pref-width: 100;
+}
+
+.underline {
+    -fx-underline: true;
+}

@@ -39,10 +39,6 @@ public class TicTacToe implements Game {
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
 
-
-        if(board[x][y]!=0)
-            return false;
-
         board[x][y] = playerNum;
 
         if(gameLogic(playerNum, x, y))
@@ -60,17 +56,11 @@ public class TicTacToe implements Game {
     }
 
     @Override
-//    public boolean moveIsValid(int x, int y)
     public boolean moveIsValid(int coordinate)
     {
-        int x=0;
-        int y=0;
-        if(board[x][y] == 0){
-            // move niet geldig.
-            return false;
-        }
-
-        return true;
+        int x = (int) Math.floor(coordinate / 3);
+        int y = (coordinate % 3);
+        return board[x][y]==0;
     }
 
     public void switchTurns(){

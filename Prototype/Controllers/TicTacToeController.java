@@ -2,38 +2,39 @@ package Controllers;
 
 import GameModes.Game;
 import Observer.ObservationSubject;
+import Observer.Observer;
 import Players.AIPlayer;
 import Players.Player;
+import Players.ViewPlayer;
 import States.GameManager;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
-public class TicTacToeController extends ObservationSubject {
+import java.util.Map;
 
-
-    /**
-     * Declaring variables
-     *
-     * */
+public class TicTacToeController implements Observer {
 
     GameManager gameManager;
     Game game;
     String player1;
     String player2;
 
-    @FXML Button b1;
-    @FXML Button b2;
-    @FXML Button b3;
-    @FXML Button b4;
-    @FXML Button b5;
-    @FXML Button b6;
-    @FXML Button b7;
-    @FXML Button b8;
-    @FXML Button b9;
+    private Button[][] cells = new Button[8][8];
+    boolean running = false;
+    Thread gameThread;
+    int networkCell;
+    int clientCell;
 
-    @FXML GridPane gameBoard;
+    @FXML GridPane gamePane;
+    @FXML Label lPlayer1;
+    @FXML Label lPlayer2;
 
     private boolean isFirstPlayer;
 
@@ -50,26 +51,16 @@ public class TicTacToeController extends ObservationSubject {
     public void goGame(){
 
         game = gameManager.getGame();
+        initViewCells();
+        running=true;
+
+        Platform.runLater(()->{
+            if(game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+                lPlayer1.getStyleClass().add("underline");
+            else
+                lPlayer2.getStyleClass().add("underline");
+        });
         game.start();
-        while (!game.hasEnded()){
-            int move = game.getNextMove();
-            game.move(move);
-//            game.MakeMove(move);
-            //game.switchTurns();
-        }
-    }
-
-    public void goTest(){
-        game = gameManager.getGame();
-        game.start();
-
-        game.move(0);
-        game.move(4);
-        game.move(1);
-        game.move(5);
-        game.move(2);
-
-        System.out.println(game.hasEnded());
 
     }
 
@@ -85,102 +76,196 @@ public class TicTacToeController extends ObservationSubject {
      */
     public void buttonClickHandler(ActionEvent event)
     {
+//
+//        Button clickedButton = (Button) event.getTarget();
+//        String buttonLabel = clickedButton.getText();
+//
+//        if("".equals(buttonLabel) && isFirstPlayer)
+//        {
+//            player1 = gameManager.getUsername();
+//            //game.setPlayer1(new Play);
+//
+//            clickedButton.setText("X");
+//            isFirstPlayer = false;
+//        }
+//        else if("".equals(buttonLabel))
+//        {
+//            player2 = gameManager.getUsername();
+//            clickedButton.setText("O");
+//            isFirstPlayer = true;
+//        }
+//
+//        if(gameLogic())
+//        {
+//            if(isFirstPlayer)
+//            {
+//                System.out.println("The winner is " + player1);
+//            }
+//            else
+//            {
+//                System.out.println("The winner is " + player2);
+//            }
+//            System.out.println("game over");
+//        }
+    }
 
-        Button clickedButton = (Button) event.getTarget();
-        String buttonLabel = clickedButton.getText();
+//    private void highlightWinningCombo(Button first, Button second, Button third)
+//    {
+//        first.getStyleClass().add("winning-button");
+//        second.getStyleClass().add("winning-button");
+//        third.getStyleClass().add("winning-button");
+//    }
 
-        if("".equals(buttonLabel) && isFirstPlayer)
-        {
-            player1 = gameManager.getUsername();
-            //game.setPlayer1(new Play);
 
-            clickedButton.setText("X");
-            isFirstPlayer = false;
-        }
-        else if("".equals(buttonLabel))
-        {
-            player2 = gameManager.getUsername();
-            clickedButton.setText("O");
-            isFirstPlayer = true;
-        }
+    public void moveHandler(){
 
-        if(gameLogic())
-        {
-            if(isFirstPlayer)
-            {
-                System.out.println("The winner is " + player1);
+        gameThread = new Thread(()->{
+
+            int move;
+
+            //Make sure the client is the current player
+            if(!game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+                game.switchTurns();
+
+            Platform.runLater(()->{
+                lPlayer2.getStyleClass().remove("underline");
+                lPlayer1.getStyleClass().add("underline");
+            });
+
+            //What kind of player are you?
+            if(game.getCurrentPlayer() instanceof ViewPlayer){
+                clientCell=-1;
+                System.out.println("Waiting for input..");
+                while (clientCell<0&&running){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex){
+                        //ignore
+                    }
+                }
+                System.out.println("Got input");
+                move=clientCell;
+            } else {
+                move = game.getNextMove();
             }
-            else
-            {
-                System.out.println("The winner is " + player2);
+
+            if (game.moveIsValid(move)){
+
+                game.move(move);
+                gameManager.server.move(move);
+                game.switchTurns();
+
+            } else {
+                clientMove();
             }
-            System.out.println("game over");
+
+
+            Platform.runLater(()->{
+                lPlayer1.getStyleClass().remove("underline");
+                lPlayer2.getStyleClass().add("underline");
+            });
+
+            updateBoard();
+            Thread.currentThread().interrupt();
+
+        });
+
+        gameThread.start();
+
+    }
+
+
+    public void clientMove(){
+        moveHandler();
+    }
+
+    private void networkBoiMove(int move){
+
+        game.move(move);
+        updateBoard();
+
+    }
+
+    private EventHandler<ActionEvent> createCellHandler(int i) {
+        return event -> tileHandler(i);
+    }
+
+    private void tileHandler(int i) {
+        clientCell=i;
+    }
+
+    private void initViewCells() {
+
+        Platform.runLater(()-> {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    int i = (x % 3) + 1;
+                    i += y * 3;
+                    i--;
+
+                    Button cell = new Button();
+                    cell.setOnAction(createCellHandler(i));
+                    cells[y][x] = cell;
+                    gamePane.add(cell, x, y);
+                }
+            }
+        });
+    }
+
+    private void updateBoard(){
+        Integer[][] board = game.getBoard();
+
+        Platform.runLater(()->{
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    Button cell = cells[y][x];
+
+                    switch (board[y][x]){
+                        case 0:
+                            break;
+                        case 1:
+                            cell.setText("X");
+                            break;
+                        case 2:
+                            cell.setText("O");
+                    }
+
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void update(String message) {
+
+        if(!running)
+            return;
+
+        String[] args = message.split(" ");
+        if(args[0].equalsIgnoreCase("SVR")) {
+            switch (args[1]) {
+                case "GAME":
+                    switch (args[2]) {
+                        case "MOVE":
+                            //Received a new move
+                            Map<String, String> data = gameManager.server.parseData("SVR GAME MOVE ", message);
+                            networkCell = Integer.parseInt(data.get("MOVE"));
+                            networkBoiMove(networkCell);
+                            System.out.println(message);
+                            break;
+                        case "YOURTURN":
+                            //Your turn!
+                            System.out.println(message);
+                            clientMove();
+                            break;
+                        default:
+                            System.out.println(message);
+                            break;
+                    }
+                    break;
+            }
         }
     }
 
-    private boolean gameLogic()
-    {
-        //Row 1
-        if ("" != b1.getText() && b1.getText() == b2.getText() && b2.getText() == b3.getText())
-        {
-            highlightWinningCombo(b1,b2,b3);
-            return true;
-        }
-
-        //Row 2
-        if (""!=b4.getText() && b4.getText() == b5.getText() && b5.getText() == b6.getText())
-        {
-            highlightWinningCombo(b4,b5,b6);
-            return true;
-        }
-
-        //Row 3
-        if (""!=b7.getText() && b7.getText() == b8.getText() && b8.getText() == b9.getText())
-        {
-            highlightWinningCombo(b7,b8,b9);
-            return true;
-        }
-
-        //Column 1
-        if (""!=b1.getText() && b1.getText() == b4.getText() && b4.getText() == b7.getText())
-        {
-            highlightWinningCombo(b1,b4,b7);
-            return true;
-        }
-
-        //Column 2
-        if (""!=b2.getText() && b2.getText() == b5.getText() && b5.getText() == b8.getText())
-        {
-            highlightWinningCombo(b2,b5,b8);
-            return true;
-        }
-
-        //Column 3
-        if (""!=b3.getText() && b3.getText() == b6.getText() && b6.getText() == b9.getText())
-        {
-            highlightWinningCombo(b3,b6,b9);
-            return true;
-        }
-
-        //Diagonal 1
-        if (""!=b1.getText() && b1.getText() == b5.getText() && b5.getText() == b9.getText())
-        {
-            highlightWinningCombo(b1,b5,b9);
-            return true;
-        }
-        //Diagonal 2
-        if (""!=b3.getText() && b3.getText() == b5.getText() && b5.getText() == b7.getText())
-        {
-            highlightWinningCombo(b3,b5,b7);
-            return true;
-        }
-        return false;
-    }
-
-    private void highlightWinningCombo(Button first, Button second, Button third)
-    {
-        first.getStyleClass().add("winning-button");
-        second.getStyleClass().add("winning-button");
-        third.getStyleClass().add("winning-button");
-    }
 }

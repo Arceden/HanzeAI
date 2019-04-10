@@ -80,11 +80,11 @@ public class Main extends Application {
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
         lobbyController.registerObserver(viewHandler);
-        ticTacToeController.registerObserver(viewHandler);
 
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
         server.registerObserver(reversiController);
+        server.registerObserver(ticTacToeController);
 
 //        server.connect("localhost", 7789);
 //        server.login("Arnold");
@@ -92,17 +92,17 @@ public class Main extends Application {
 //        root.setCenter(reversiPane);
 //        reversiController.refresh();
 
-        gameManager.setGame(new TicTacToe(new InputPlayer("Rick"), new InputPlayer("Arnold")));
+//        gameManager.setGame(new TicTacToe(new ViewPlayer("Rick"), new ViewPlayer("Arnold")));
         //Set the first pane
 
-        ticTacToeController.goTest();
-        root.setCenter(ticTacToePane);
+//        ticTacToeController.goGame();
+        root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
-//        primaryStage.setScene(scene);
-//        primaryStage.setTitle("Game Client");
-//        primaryStage.show();
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Game Client");
+        primaryStage.show();
 
 
         //Handle window closing
@@ -139,6 +139,7 @@ public class Main extends Application {
                     break;
                 case "Tic-tac-toe":
                     Platform.runLater(()->root.setCenter(ticTacToePane));
+                    ticTacToeController.goGame();
                     break;
                 default:
                     System.err.println("Unknown view: "+message);
