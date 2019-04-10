@@ -95,22 +95,17 @@ public class Reversi implements Game {
         int x = (int) Math.floor(coordinate / n);
         int y = (coordinate % n);
 
-        System.out.println("X:"+x+"\tY:"+y);
-
         if(moveIsValid(coordinate)) {
+            System.out.println("Move was deemed as valid");
             if(playerTurn == player1) {
                 board[x][y] = 1;
-                switchTurns();
             }
             else{
                 board[x][y] = 2;
-                switchTurns();
             }
-        }else{
+        } else {
             board[x][y] = 0;
         }
-
-        printBoard();
 
         return true;
     }
@@ -144,7 +139,7 @@ public class Reversi implements Game {
         return coords;
     }
 
-    /** NOTE: AI */
+    /** Flip the stones. totctr = amount of stones flipped */
     public int MakeMove(int x, int y) {
         int player=0;
         if(playerTurn==player1)
@@ -190,20 +185,21 @@ public class Reversi implements Game {
         int x = (int) Math.floor(coordinate / n);
         int y = (coordinate % n);
         if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
-            //System.out.println("Eén");
+            System.out.println("Out of bounds");
             return false;
         }
         if(board[x][y] != 0) {
-            //System.out.println("Twee");
+            System.out.println("Space already occupied");
             return false;
         }
 
         int totctr = MakeMove(x, y);
 
         if(totctr == 0) {
-            //System.out.println("Drie");
+            System.err.println("No stones flipped. This was NOT a valid move.");
             return false;
         }
+
         return true;
     }
 
