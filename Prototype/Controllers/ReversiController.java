@@ -36,6 +36,10 @@ public class ReversiController implements Observer {
     @FXML
     Label lPlayerTurn;
 
+    public ReversiController(){
+        initViewCells();
+    }
+
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
     }
@@ -47,7 +51,6 @@ public class ReversiController implements Observer {
         game = gameManager.getGame();
         game.start();
 
-        initViewCells();
         updateBoard();
 
         Platform.runLater(()->{
@@ -123,6 +126,11 @@ public class ReversiController implements Observer {
      */
     private void networkBoiMove(int move){
 
+        //Make sure the client is NOT the current player
+        if(game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getUsername()))
+            game.switchTurns();
+
+        game.moveIsValid(move);
         game.move(move);
         updateBoard();
 
@@ -194,6 +202,9 @@ public class ReversiController implements Observer {
                         case "MOVE":
                             //Received a new move
                             Map<String, String> data = gameManager.server.parseData("SVR GAME MOVE ", message);
+                            String toMove = data.get("PLAYER");
+                            if(gameManager.getUsername().equals(toMove))    //Ignore message if this is yourself
+                                return;
                             networkCell = Integer.parseInt(data.get("MOVE"));
                             networkBoiMove(networkCell);
                             break;

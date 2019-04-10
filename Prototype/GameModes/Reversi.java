@@ -49,7 +49,6 @@ public class Reversi implements Game {
             }
         }
         if(n % 2 == 0){
-//            System.out.println(n);
             int z = (n - 2) / 2;
             board[z][z] = 2;
             board[n - 1 - z][z] = 1;
@@ -80,8 +79,6 @@ public class Reversi implements Game {
     /** Player 1 is first to play */
     public void start() {
         playerTurn=player1;
-//        System.out.println("First to play: "+playerTurn.getUsername());
-//        System.out.println("First to play: "+getCurrentPlayer().getUsername());
     }
 
     public int getNextMove(){
@@ -89,23 +86,16 @@ public class Reversi implements Game {
     }
 
     @Override
-    /** TODO: Execute move */
     public boolean move(int coordinate) {
 
         int x = (int) Math.floor(coordinate / n);
         int y = (coordinate % n);
 
-        if(moveIsValid(coordinate)) {
-            System.out.println("Move was deemed as valid");
-            if(playerTurn == player1) {
-                board[x][y] = 1;
-            }
-            else{
-                board[x][y] = 2;
-            }
-        } else {
-            board[x][y] = 0;
-        }
+        int playerNum=0;
+        if(playerTurn==player1) playerNum=1;
+        if(playerTurn==player2) playerNum=2;
+
+        board[x][y] = playerNum;
 
         return true;
     }
@@ -140,12 +130,10 @@ public class Reversi implements Game {
     }
 
     /** Flip the stones. totctr = amount of stones flipped */
-    public int MakeMove(int x, int y) {
-        int player=0;
-        if(playerTurn==player1)
-            player=1;
-        else
-            player=2;
+    public int flippableCount(int x, int y) {
+        int playerNum=0;
+        if(playerTurn==player1) playerNum=1;
+        if(playerTurn==player2) playerNum=2;
 
         int totctr = 0;
         Integer[][] tempboard = new Integer[n][n];
@@ -160,9 +148,9 @@ public class Reversi implements Game {
                 if (dx < 0 || dx > n - 1 || dy < 0 || dy > n - 1) {
                     ctr = 0;
                     break;
-                } else if (board[dx][dy] == player) {
+                } else if (tempboard[dx][dy] == playerNum) {
                     break;
-                } else if (board[dx][dy] == 0) {
+                } else if (tempboard[dx][dy] == 0) {
                     ctr = 0;
                     break;
                 } else {
@@ -172,7 +160,7 @@ public class Reversi implements Game {
             for (int i = 0; i < ctr; i++) {
                 int dx = x + dirx[d] * (i + 1);
                 int dy = y + diry[d] * (i + 1);
-                board[dx][dy] = player;
+                tempboard[dx][dy] = playerNum;
             }
             totctr += ctr;
         }
@@ -185,18 +173,18 @@ public class Reversi implements Game {
         int x = (int) Math.floor(coordinate / n);
         int y = (coordinate % n);
         if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
-            System.out.println("Out of bounds");
+            System.err.println("Out of bounds");
             return false;
         }
         if(board[x][y] != 0) {
-            System.out.println("Space already occupied");
+            System.err.println("Space already occupied");
             return false;
         }
 
-        int totctr = MakeMove(x, y);
-
-        if(totctr == 0) {
-            System.err.println("No stones flipped. This was NOT a valid move.");
+        //Check if stones are flippable
+        int flipCount = flippableCount(x, y);
+        if(flipCount<1){
+            System.err.println("No flippable stones with this move.");
             return false;
         }
 
@@ -267,11 +255,11 @@ public class Reversi implements Game {
         System.out.println("No possible moves left for this player!");
         if (playerTurn == player1) {
             player1Pass = true;
-            switchTurns();
+//            switchTurns();
         }
         else{
             player2Pass = true;
-            switchTurns();
+//            switchTurns();
         }
         return false;
     }
