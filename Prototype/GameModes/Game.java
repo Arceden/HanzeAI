@@ -10,7 +10,7 @@ public interface Game {
     public boolean move(int coordinate);
 
     /** Check if the specified move is valid */
-    public boolean moveIsValid(int coordinate);
+    public boolean moveIsValid(int x, int y);
 
     /** Start the game by preparing the board and choose who starts (or retreive the starting player if online) */
     public void start();
@@ -23,6 +23,6 @@ public interface Game {
     public void setPlayer2(Player player2);
 
     public String getName();
-    public Player getCurrentPlayer();
+    public String getCurrentPlayer();
     public String getCurrentStatus();
 }

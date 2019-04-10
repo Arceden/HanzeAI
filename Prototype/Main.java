@@ -92,8 +92,14 @@ public class Main extends Application {
         //root.setCenter(ticTacToePane);
 
         //Set the first pane
-        root.setCenter(loginPane);
+        //root.setCenter(loginPane);
 //        root.setCenter(lobbyPane);
+
+
+        gameManager.setGame(new TicTacToe(new InputPlayer("Rick"), new InputPlayer("Arnold")));
+        ticTacToeController.goGame();
+
+
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);

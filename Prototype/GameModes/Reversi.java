@@ -14,7 +14,7 @@ public class Reversi implements Game {
     }
 
     @Override
-    public boolean moveIsValid(int coordinate) {
+    public boolean moveIsValid(int x, int y) {
         return false;
     }
 

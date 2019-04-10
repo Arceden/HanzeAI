@@ -37,7 +37,6 @@ public class TicTacToeController extends ObservationSubject {
 
     private boolean isFirstPlayer;
 
-
     public TicTacToeController()
     {
         System.out.println("TicTacToeController");
@@ -46,9 +45,20 @@ public class TicTacToeController extends ObservationSubject {
 
     }
 
-
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
+    }
+
+    public void goGame(){
+
+        game = gameManager.getGame();
+        game.start();
+        while (!game.hasEnded()){
+            int move = game.getNextMove();
+            game.move(move);
+//            game.MakeMove(move);
+            //game.switchTurns();
+        }
     }
 
     @FXML
