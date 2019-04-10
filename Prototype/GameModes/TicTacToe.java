@@ -21,6 +21,7 @@ public class TicTacToe implements Game {
     public TicTacToe(Player player1, Player player2){
         this.player1 = player1;
         this.player2 = player2;
+        playerTurn=player1;
         this.board = initBoard(board);
     }
 
@@ -32,13 +33,17 @@ public class TicTacToe implements Game {
     @Override
     public boolean move(int coordinate) {
         System.out.println("Moving "+playerTurn.getUsername()+" to "+coordinate+"!");
-        //printBoard();
 
         int x = (int) Math.floor(coordinate / 3);
         int y = (coordinate % 3);
-        //moveIsValid(x, y);
 
-        if(gameLogic(coordinate, x, y))
+        System.out.println("Coordinate: "+ coordinate);
+
+        int playerNum=0;
+        if(playerTurn==player1) playerNum=1;
+        if(playerTurn==player2) playerNum=2;
+
+        if(gameLogic(playerNum, y, x))
         {
             System.out.println("We have a winner");
         }
@@ -48,16 +53,8 @@ public class TicTacToe implements Game {
             System.out.println("y : " + y);
         }
 
-        if(playerTurn == player1)
-        {
-            board[x][y] = 1;
-            switchTurns();
-        }
-        else
-        {
-            board[x][y] = 2;
-            switchTurns();
-        }
+        board[x][y] = playerNum;
+        switchTurns();
 
         return true;
     }
@@ -90,23 +87,23 @@ public class TicTacToe implements Game {
         return false;
     }
 
-    private boolean gameLogic(int input, int x, int y)
+    private boolean gameLogic(int input, int row, int col)
     {
-        return (board[x][0] == input &&
-                board[x][1] == input &&
-                board[x][2] == input ||
+        return ((board[row][0] == input &&
+                board[row][1] == input &&
+                board[row][2] == input) ||
 
-                board[0][y] == input &&
-                board[1][y] == input &&
-                board[2][y] == input ||
+                (board[0][col] == input &&
+                board[1][col] == input &&
+                board[2][col] == input) ||
 
-                x == y && board[0][0] == input &&
+                (row == col && board[0][0] == input &&
                 board[1][1] == input &&
-                board[2][2] == input ||
+                board[2][2] == input) ||
 
-                x + y == 2 && board[0][2] == input &&
+                (row + col == 2 && board[0][2] == input &&
                 board[1][1] == input &&
-                board[2][0] == input);
+                board[2][0] == input));
     }
 
     @Override

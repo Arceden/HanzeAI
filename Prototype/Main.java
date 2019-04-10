@@ -2,8 +2,11 @@ import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.ReversiController;
 import Controllers.TicTacToeController;
+import GameModes.TicTacToe;
 import Network.ServerHandler;
 import Observer.Observer;
+import Players.InputPlayer;
+import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -89,9 +92,11 @@ public class Main extends Application {
 //        root.setCenter(reversiPane);
 //        reversiController.refresh();
 
-
+        gameManager.setGame(new TicTacToe(new InputPlayer("Rick"), new InputPlayer("Arnold")));
         //Set the first pane
-        root.setCenter(loginPane);
+
+        ticTacToeController.goGame();
+        root.setCenter(ticTacToePane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
