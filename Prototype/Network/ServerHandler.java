@@ -114,6 +114,10 @@ public class ServerHandler extends ObservationSubject {
 
     /** Send a message to the server */
     public String send(String message, boolean expectsOK){
+        if (socket==null)
+            return null;
+        if (!socket.isConnected())
+            return null;
         if (expectsOK)
             expectingOKCount++;
         toServer.println(message);

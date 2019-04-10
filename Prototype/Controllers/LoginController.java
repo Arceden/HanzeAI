@@ -2,9 +2,17 @@ package Controllers;
 
 import States.GameManager;
 import Observer.ObservationSubject;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class LoginController extends ObservationSubject {
 
@@ -18,6 +26,30 @@ public class LoginController extends ObservationSubject {
     private TextField tfUsername;
     @FXML
     private Button bLogin;
+
+    public LoginController(){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("Prototype/usernames.txt"));
+            ArrayList<String> usernames = new ArrayList<>();
+
+            String name;
+            while ((name = reader.readLine())!=null){
+                usernames.add(name);
+            }
+
+            Random random = new Random();
+            Platform.runLater(()->{
+                tfUsername.setText(usernames.get(random.nextInt(usernames.size())));
+            });
+
+            reader.close();
+
+        } catch (FileNotFoundException ex){
+            System.err.println("Could not load the usernames file.");
+        } catch (IOException ex){
+            //ignore
+        }
+    }
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
