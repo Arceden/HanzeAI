@@ -22,7 +22,7 @@ public class GameManager implements GameManagerState {
 
     //Connection Management
     public ServerHandler server;
-    String username;
+    String username = "undefined";
     Player player;
     Game game;
 
@@ -38,6 +38,10 @@ public class GameManager implements GameManagerState {
 
     public void setServer(ServerHandler server) {
         this.server = server;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void setUsername(String username) {

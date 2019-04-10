@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class TicTacToe implements Game, Observer {
+public class TicTacToe implements Game {
 
     private Player player1;
     private Player player2;
@@ -24,20 +24,9 @@ public class TicTacToe implements Game, Observer {
         this.board = initBoard(board);
     }
 
-
     @Override
-    public void start() {
-        Random random = new Random();
-        switch (random.nextInt(1))
-        {
-            case 0: playerTurn = player1; break;
-            case 1: playerTurn = player2; break;
-        }
-        System.out.println(this.playerTurn.getUsername());
-    }
-
-    public int getNextMove(){
-        return playerTurn.requestMove();
+    public int MakeMove(int x, int y) {
+        return 0;
     }
 
     @Override
@@ -74,8 +63,11 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public boolean moveIsValid(int x, int y)
+//    public boolean moveIsValid(int x, int y)
+    public boolean moveIsValid(int coordinate)
     {
+        int x=0;
+        int y=0;
         if(board[x][y] == 0){
             // move niet geldig.
             return false;
@@ -84,7 +76,7 @@ public class TicTacToe implements Game, Observer {
         return true;
     }
 
-    private void switchTurns(){
+    public void switchTurns(){
         printBoard();
         if(playerTurn.getUsername().equalsIgnoreCase(player1.getUsername()))
             playerTurn=player2;
@@ -95,7 +87,6 @@ public class TicTacToe implements Game, Observer {
 
     @Override
     public boolean hasEnded() {
-
         return false;
     }
 
@@ -119,8 +110,8 @@ public class TicTacToe implements Game, Observer {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public void start() {
+
     }
 
     @Override
@@ -130,18 +121,17 @@ public class TicTacToe implements Game, Observer {
 
     @Override
     public void setPlayer1(Player player1) {
-        this.player1 = player1;
+
     }
 
     @Override
     public void setPlayer2(Player player2) {
-        this.player2 = player2;
+
     }
 
     @Override
-    public String getCurrentStatus()
-    {
-        return "";
+    public String getName() {
+        return name;
     }
 
     public void update(String message) {
@@ -167,5 +157,35 @@ public class TicTacToe implements Game, Observer {
         for(Integer[] arr : board){
             System.out.println(Arrays.toString(arr));
         }
+    }
+
+    @Override
+    public int getNextMove() {
+        return playerTurn.requestMove();
+    }
+
+    @Override
+    public boolean validMovesLeft() {
+        return false;
+    }
+
+    @Override
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    @Override
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    @Override
+    public String getCurrentStatus() {
+        return null;
+    }
+
+    @Override
+    public Integer[][] getBoard() {
+        return board;
     }
 }

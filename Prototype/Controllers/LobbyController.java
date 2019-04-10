@@ -1,8 +1,10 @@
 package Controllers;
 
+import GameModes.Game;
+import GameModes.Reversi;
+import GameModes.TicTacToe;
 import Observer.*;
-import Players.AIPlayer;
-import Players.InputPlayer;
+import Players.*;
 import States.GameManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -13,6 +15,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+
+import java.util.Map;
 
 public class LobbyController extends ObservationSubject implements Observer {
 
@@ -33,8 +37,8 @@ public class LobbyController extends ObservationSubject implements Observer {
     }
 
     public void refresh(){
-        //Set default play style
-        gameManager.setPlayer(new AIPlayer(gameManager.getUsername()));
+        //Default playstyle
+        asPlayer();
 
         //Retreive gamelist and playerlist
         gameManager.server.getGamelist();
@@ -116,10 +120,10 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     @FXML
     void asPlayer(){
-        gameManager.setPlayer(new InputPlayer(gameManager.getUsername()));
+        gameManager.setPlayer(new ViewPlayer(gameManager.getUsername()));
         asPlayer.setDisable(true);
         asAI.setDisable(false);
-        System.out.println("Playing as Player!");
+        System.out.println("Playing as human!");
     }
 
     @FXML
@@ -173,15 +177,49 @@ public class LobbyController extends ObservationSubject implements Observer {
      * @param message
      */
     private void startMatch(String message){
-        String opponentName;
-        System.out.println(message);
+        //Parse the server data into a map
+        Map<String, String> data = gameManager.server.parseData("SVR GAME MATCH ", message);
+        Game game=null;
+
+        String GAMETYPE = data.get("GAMETYPE");
+        String FIRSTPLAYER = data.get("PLAYERTOMOVE");
+        String OPPONENT = data.get("OPPONENT");
+
+        System.out.println(OPPONENT);
+        System.out.println(gameManager.getPlayer().getUsername());
+
+        Player player1;
+        Player player2;
+
+        //Set the players
+        if(FIRSTPLAYER.equalsIgnoreCase(gameManager.getUsername())) {
+            //You're first!
+            player1=gameManager.getPlayer();
+            player2=new NetworkPlayer(OPPONENT);
+        } else {
+            //Network player goes first
+            player1=new NetworkPlayer(OPPONENT);
+            player2=gameManager.getPlayer();
+        }
+
+        //Set the game type
+        if(GAMETYPE.equalsIgnoreCase("Reversi"))
+            game = new Reversi(player1, player2);
+        else if(GAMETYPE.equalsIgnoreCase("Tic-tac-toe"))
+            game = new TicTacToe(player1, player2);
+
+        System.out.println("First to play: \t"+player1.getUsername());
+        System.out.println("Last to play: \t"+player2.getUsername());
+
+        //Place the game in the game manager
+        gameManager.setGame(game);
 
         //Change the gameManager state to InMatchState
         playerlistThread.interrupt();
         gameManager.matchStart();
 
         //Change view
-        notifyObservers("MATCH");
+        notifyObservers(GAMETYPE);
     }
 
     /** Another player has challenged you. Show this on screen */
@@ -236,7 +274,7 @@ public class LobbyController extends ObservationSubject implements Observer {
                         case "LOSS":
                             notifyObservers("LOBBY");
                             break;
-                        case "TIE":
+                        case "DRAW":
                             notifyObservers("LOBBY");
                             break;
                         case "CHALLENGE":

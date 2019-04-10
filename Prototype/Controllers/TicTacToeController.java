@@ -41,8 +41,6 @@ public class TicTacToeController extends ObservationSubject {
     {
         System.out.println("TicTacToeController");
         //this.game = gameManager.getGame();
-
-
     }
 
     public void setGameManager(GameManager gameManager) {
@@ -105,7 +103,6 @@ public class TicTacToeController extends ObservationSubject {
             System.out.println("game over");
         }
     }
-
 
     private boolean gameLogic()
     {

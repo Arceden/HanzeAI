@@ -1,16 +1,9 @@
 import Controllers.LobbyController;
 import Controllers.LoginController;
-import Controllers.MatchController;
+import Controllers.ReversiController;
 import Controllers.TicTacToeController;
-import GameModes.Game;
-import GameModes.TicTacToe;
-import Network.ConnectionHandler;
 import Network.ServerHandler;
 import Observer.Observer;
-import Players.AIPlayer;
-import Players.InputPlayer;
-import Players.NetworkPlayer;
-import Players.Player;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -22,18 +15,19 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+
 public class Main extends Application {
 
     LoginController loginController;
     LobbyController lobbyController;
-    MatchController matchController;
+    ReversiController reversiController;
     TicTacToeController ticTacToeController;
 
     Pane loginPane;
     Pane lobbyPane;
-    Pane matchPane;
     Pane ticTacToePane;
-
+    Pane reversiPane;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -63,10 +57,10 @@ public class Main extends Application {
         lobbyPane = lobbyLoader.load();
         lobbyController = lobbyLoader.getController();
 
-        /* Match Screen */
-        FXMLLoader matchLoader = new FXMLLoader(getClass().getResource("Views/match.fxml"));
-        matchPane = matchLoader.load();
-        matchController = matchLoader.getController();
+        /* Reversi Screen */
+        FXMLLoader reversiLoader = new FXMLLoader(getClass().getResource("Views/reversi.fxml"));
+        reversiPane = reversiLoader.load();
+        reversiController = reversiLoader.getController();
 
         /* Tic Tac Toe Screen */
         FXMLLoader ticTacToeLoader = new FXMLLoader(getClass().getResource("Views/ticTacToeView.fxml"));
@@ -76,30 +70,28 @@ public class Main extends Application {
         //Assign the models to the game managers
         loginController.setGameManager(gameManager);
         lobbyController.setGameManager(gameManager);
-        matchController.setGameManager(gameManager);
+        reversiController.setGameManager(gameManager);
         ticTacToeController.setGameManager(gameManager);
 
 
         //Assign the viewHandler as the observer for the views
         loginController.registerObserver(viewHandler);
         lobbyController.registerObserver(viewHandler);
-        matchController.registerObserver(viewHandler);
         ticTacToeController.registerObserver(viewHandler);
 
         //Assign the controller to the server handler
         server.registerObserver(lobbyController);
+        server.registerObserver(reversiController);
 
-        //root.setCenter(ticTacToePane);
+//        server.connect("localhost", 7789);
+//        server.login("Arnold");
+//        gameManager.setGame(new Reversi(new ViewPlayer("Barry"), new ViewPlayer("Arnold")));
+//        root.setCenter(reversiPane);
+//        reversiController.refresh();
+
 
         //Set the first pane
-        //root.setCenter(loginPane);
-//        root.setCenter(lobbyPane);
-
-
-        gameManager.setGame(new TicTacToe(new InputPlayer("Rick"), new InputPlayer("Arnold")));
-        ticTacToeController.goGame();
-
-
+        root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
         Scene scene = new Scene(root);
@@ -111,7 +103,11 @@ public class Main extends Application {
         //Handle window closing
         primaryStage.setOnCloseRequest(e->{
             lobbyController.stopThreads();
+            reversiController.stopThreads();
+            server.send("forfeit");
             server.disconnect();
+
+            System.exit(1);
         });
     }
 
@@ -132,8 +128,15 @@ public class Main extends Application {
                     Platform.runLater(()->root.setCenter(lobbyPane));
                     lobbyController.refresh();
                     break;
-                case "MATCH":
-                    Platform.runLater(()->root.setCenter(matchPane));
+                case "Reversi":
+                    Platform.runLater(()->root.setCenter(reversiPane));
+                    reversiController.refresh();
+                    break;
+                case "Tic-tac-toe":
+                    Platform.runLater(()->root.setCenter(ticTacToePane));
+                    break;
+                default:
+                    System.err.println("Unknown view: "+message);
                     break;
             }
         }
