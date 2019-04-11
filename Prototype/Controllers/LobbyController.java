@@ -6,6 +6,7 @@ import GameModes.TicTacToe;
 import Observer.*;
 import Players.*;
 import States.GameManager;
+import com.sun.xml.internal.ws.util.StringUtils;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 import java.util.Map;
 
@@ -24,15 +26,17 @@ public class LobbyController extends ObservationSubject implements Observer {
     Thread playerlistThread;
     GameManager gameManager;
     ObservableList<String> playerList = FXCollections.observableArrayList();
-    ObservableList<String> challengerList = FXCollections.observableArrayList();
+    ObservableList<Text> challengerList = FXCollections.observableArrayList();
     ObservableList<String> scoreList = FXCollections.observableArrayList();
+
+    String selectedPlayer;
 
     @FXML private Button asAI;
     @FXML private Button asPlayer;
     @FXML private HBox subscribeTo;
     @FXML private Label displayUsername;
     @FXML private ListView<String> playerView;
-    @FXML private ListView<String> challengerView;
+    @FXML private ListView<Text> challengerView;
     @FXML private ListView<String> scoreView;
 
     public LobbyController(){
@@ -60,6 +64,19 @@ public class LobbyController extends ObservationSubject implements Observer {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem rev = new MenuItem("Challenge for Reversi");
         MenuItem tic = new MenuItem("Challenge for Tic-tac-toe");
+        rev.setOnAction(e->{
+            if(selectedPlayer==null)
+                return;
+            System.out.println("Challenging "+selectedPlayer+" for a game of Reversi");
+            gameManager.server.send("challenge \"" + selectedPlayer + "\" \"Reversi\"");
+        });
+        tic.setOnAction(e->{
+            if(selectedPlayer==null)
+                return;
+            System.out.println("Challenging "+selectedPlayer+" for a game of Tic-tac-toe");
+            gameManager.server.send("challenge \"" + selectedPlayer + "\" \"Tic-tac-toe\"");
+        });
+
         contextMenu.getItems().addAll(rev, tic);
 
         playerView.setOnContextMenuRequested(e->{
@@ -79,7 +96,7 @@ public class LobbyController extends ObservationSubject implements Observer {
             try {
                 while (true) {
                     gameManager.server.getPlayers();
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 }
             } catch (InterruptedException ex){
                 //ignore
@@ -156,32 +173,30 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     @FXML
     public void challengePlayer(MouseEvent event){
-        MouseButton b = event.getButton();
-        System.out.println(b == b.SECONDARY);
-
         try {
-            String selectedPlayer = playerView.getSelectionModel().getSelectedItem();
+            selectedPlayer = playerView.getSelectionModel().getSelectedItem();
+
+            //Check if the challenged player is yourself. If so, set to null.
+            //You cannot challenge yourself
             if (selectedPlayer.equalsIgnoreCase(gameManager.getUsername())) {
-                System.out.println("You can't challenge yourself!");
-                return;
+                selectedPlayer=null;
             }
-
-
-
-            System.out.println("Challenging " + selectedPlayer + " for a game of Tic-tac-toe!");
-            gameManager.server.send("challenge \"" + selectedPlayer + "\" \"Tic-tac-toe\"");
         } catch (NullPointerException ex){
             //This happens when the listview is clicked but noone was selected
             //ignore
+            selectedPlayer=null;
         }
     }
 
     @FXML
     void acceptChallenge(){
         try {
-            String selectedPlayer = challengerView.getSelectionModel().getSelectedItem();
-            String challengeNumber = selectedPlayer.split("ChallengeNr:")[1];
+            Text selectedPlayer = challengerView.getSelectionModel().getSelectedItem();
+            String challengeNumber = (String) selectedPlayer.getUserData();
             gameManager.server.send("challenge accept " + challengeNumber);
+
+            int i = challengerList.indexOf(selectedPlayer);
+            challengerList.remove(i);
         } catch (NullPointerException ex){
             //This happens when the listview is clicked but noone was selected
             //ignore
@@ -249,27 +264,30 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     /** Another player has challenged you. Show this on screen */
     private void challengerApproaches(String message){
-        // TODO: FIX THIS GARBAGE
-        String args[] = message.split(" ");
+        Map<String, String> data = gameManager.server.parseData("SVR GAME CHALLENGE ", message);
+        String challenger = data.get("CHALLENGER");
+        String challengeNumber = data.get("CHALLENGENUMBER");
+        String gameType = data.get("GAMETYPE");
 
         Platform.runLater(()->{
-            challengerList.add(args[4].substring(1, args[4].length()-2)+" ChallengeNr:"+args[6].substring(1, args[6].length()-2));
+            Text tChallenger = new Text(gameType+": "+challenger);
+            tChallenger.setUserData(challengeNumber);
+            challengerList.add(tChallenger);
         });
     }
 
-    /* TODO: Remove the challenger who left from the list */
+    /* Remove the cancelled challenge from the list */
     private void challengerCancellled(String message){
-        String args[] = message.split(" ");
-        for (int i=0;i<challengerList.size();i++){
-            String nr = challengerList.get(i).split(" ChallengeNr:")[1];
-            System.out.println(nr+args[5].substring(1, args[5].length()-2));
-            if(nr.equalsIgnoreCase(args[5].substring(1, args[5].length()-2))) {
-                int n = i;
-                Platform.runLater(() -> {
-                    challengerList.remove(n);
+        System.out.println(message);
+        Map<String, String> data = gameManager.server.parseData("SVR GAME CHALLENGE CANCELLED ", message);
+        for(Text challenger: challengerList){
+            if(data.get("CHALLENGENUMBER").equalsIgnoreCase((String)challenger.getUserData())){
+                Platform.runLater(()->{
+                    int i = challengerList.indexOf(challenger);
+                    challengerList.remove(i);
                 });
+                break;
             }
-
         }
     }
 

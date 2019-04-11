@@ -97,7 +97,7 @@ public class Main extends Application {
             server.send("forfeit");
             server.disconnect();
 
-            System.exit(1);
+//            System.exit(1);
         });
     }
 
