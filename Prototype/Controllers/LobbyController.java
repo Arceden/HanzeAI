@@ -9,10 +9,11 @@ import States.GameManager;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
@@ -24,6 +25,7 @@ public class LobbyController extends ObservationSubject implements Observer {
     GameManager gameManager;
     ObservableList<String> playerList = FXCollections.observableArrayList();
     ObservableList<String> challengerList = FXCollections.observableArrayList();
+    ObservableList<String> scoreList = FXCollections.observableArrayList();
 
     @FXML private Button asAI;
     @FXML private Button asPlayer;
@@ -31,6 +33,11 @@ public class LobbyController extends ObservationSubject implements Observer {
     @FXML private Label displayUsername;
     @FXML private ListView<String> playerView;
     @FXML private ListView<String> challengerView;
+    @FXML private ListView<String> scoreView;
+
+    public LobbyController(){
+
+    }
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -47,6 +54,18 @@ public class LobbyController extends ObservationSubject implements Observer {
         //Initialize the listViews
         playerView.setItems(playerList);
         challengerView.setItems(challengerList);
+        scoreView.setItems(scoreList);
+
+        //CONTEXT MENU
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem rev = new MenuItem("Challenge for Reversi");
+        MenuItem tic = new MenuItem("Challenge for Tic-tac-toe");
+        contextMenu.getItems().addAll(rev, tic);
+
+        playerView.setOnContextMenuRequested(e->{
+            contextMenu.show(playerView, e.getScreenX(), e.getScreenY());
+        });
+
 
         //Update the welcome text
         Platform.runLater(()->{
@@ -74,10 +93,13 @@ public class LobbyController extends ObservationSubject implements Observer {
         //Format the playernames
         message = message.replace("SVR PLAYERLIST ", "");
         String[] players = message.substring(1, message.length()-1).split(", ");
-        for(int i=0;i<players.length;i++)
+        for(int i=0;i<players.length;i++){
             players[i] = players[i].substring(1, players[i].length()-1);
 
-        //Add the list to the listview
+            //Create combo boxes
+
+        }
+
 
         Platform.runLater(()->{
             playerList.clear();
@@ -85,27 +107,25 @@ public class LobbyController extends ObservationSubject implements Observer {
         });
     }
 
-    private void gamelistHandler(String message){
-        //Clear the list, incase it has already been filled
+    private void gameScoreHandler(String message){
+        String[] args = message.split(" ");
+        message = message.replace("SVR GAME LOSS", "SVR GAME ");
+        message = message.replace("SVR GAME DRAW","SVR GAME ");
+        message = message.replace("SVR GAME WIN", "SVR GAME ");
+        Map<String, String> data = gameManager.server.parseData("SVR GAME ", message);
+
         Platform.runLater(()->{
-            subscribeTo.getChildren().clear();
+            String score = "";
+            score+=args[2]+" ";
+            score+=gameManager.getGame().getName();
+            score+=": ";
+            score+=gameManager.getGame().getPlayer1().getUsername();
+            score+=" VS ";
+            score+=gameManager.getGame().getPlayer2().getUsername();
+
+            scoreList.add(score);
         });
 
-        //Format the items
-        message = message.replace("SVR GAMELIST ", "");
-        String[] gametypes = message.substring(1, message.length()-1).split(", ");
-        for(int i=0;i<gametypes.length;i++)
-            gametypes[i] = gametypes[i].substring(1, gametypes[i].length()-1);
-
-        //Add a event handler and bring it to the view
-        for(int i=0;i<gametypes.length;i++){
-            String name = gametypes[i];
-            Button subscribe = new Button("Subscribe to "+name);
-            subscribe.setOnAction(e->{
-                gameManager.server.subscribe(name);
-            });
-            Platform.runLater(()->subscribeTo.getChildren().add(subscribe));
-        }
     }
 
     @FXML
@@ -135,13 +155,18 @@ public class LobbyController extends ObservationSubject implements Observer {
     }
 
     @FXML
-    public void challengePlayer(){
+    public void challengePlayer(MouseEvent event){
+        MouseButton b = event.getButton();
+        System.out.println(b == b.SECONDARY);
+
         try {
             String selectedPlayer = playerView.getSelectionModel().getSelectedItem();
             if (selectedPlayer.equalsIgnoreCase(gameManager.getUsername())) {
                 System.out.println("You can't challenge yourself!");
                 return;
             }
+
+
 
             System.out.println("Challenging " + selectedPlayer + " for a game of Tic-tac-toe!");
             gameManager.server.send("challenge \"" + selectedPlayer + "\" \"Tic-tac-toe\"");
@@ -269,12 +294,15 @@ public class LobbyController extends ObservationSubject implements Observer {
                             break;
                         case "WIN":
                             System.out.println(message);
+                            gameScoreHandler(message);
                             notifyObservers("LOBBY");
                             break;
                         case "LOSS":
+                            gameScoreHandler(message);
                             notifyObservers("LOBBY");
                             break;
                         case "DRAW":
+                            gameScoreHandler(message);
                             notifyObservers("LOBBY");
                             break;
                         case "CHALLENGE":

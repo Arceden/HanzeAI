@@ -11,6 +11,12 @@
             fx:controller="Controllers.LobbyController"
             prefHeight="400.0" prefWidth="600.0">
 
+    <left>
+        <VBox>
+            <Label text="Score list"/>
+            <ListView fx:id="scoreView"></ListView>
+        </VBox>
+    </left>
     <center>
         <VBox>
             <Label text="Welcome, placeholder!" fx:id="displayUsername"/>

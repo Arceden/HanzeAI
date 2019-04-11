@@ -2,11 +2,8 @@ import Controllers.LobbyController;
 import Controllers.LoginController;
 import Controllers.ReversiController;
 import Controllers.TicTacToeController;
-import GameModes.TicTacToe;
 import Network.ServerHandler;
 import Observer.Observer;
-import Players.InputPlayer;
-import Players.ViewPlayer;
 import States.GameManager;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -15,10 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.util.Arrays;
 
 public class Main extends Application {
 
@@ -90,7 +84,7 @@ public class Main extends Application {
         root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 800, 400);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Game Client");
         primaryStage.show();
