@@ -60,7 +60,7 @@ public class LobbyController extends ObservationSubject implements Observer {
             try {
                 while (true) {
                     gameManager.server.getPlayers();
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 }
             } catch (InterruptedException ex){
                 //ignore

@@ -1,6 +1,7 @@
 package Controllers;
 
 import GameModes.Game;
+import GameModes.Reversi;
 import Observer.Observer;
 import Players.ViewPlayer;
 import States.GameManager;
@@ -11,8 +12,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 
 import java.util.Map;
 
@@ -27,17 +31,21 @@ public class ReversiController implements Observer {
     private Button[][] cells = new Button[8][8];
     private boolean running;
 
+    private Circle cBlack;
+    private Circle cWhite;
+    private Text tBlack;
+    private Text tWhite;
+    private Label lPlayer1;
+    private Label lPlayer2;
+
     @FXML
     GridPane gamePane;
     @FXML
-    Label lPlayer1;
-    @FXML
-    Label lPlayer2;
-    @FXML
-    Label lPlayerTurn;
+    GridPane gameInfo;
 
     public ReversiController(){
         initViewCells();
+        makeInfoBoard();
     }
 
     public void setGameManager(GameManager gameManager) {
@@ -51,6 +59,8 @@ public class ReversiController implements Observer {
         game = gameManager.getGame();
         game.start();
 
+        makeInfoBoard();
+
         updateBoard();
 
         Platform.runLater(()->{
@@ -60,7 +70,7 @@ public class ReversiController implements Observer {
 
     }
 
-    public void moveHandler(){
+    private void moveHandler(){
 
         gameThread = new Thread(()->{
 
@@ -69,9 +79,7 @@ public class ReversiController implements Observer {
                 game.switchTurns();
 
             //Show the current player
-            Platform.runLater(()->{
-                lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
-            });
+            updateBoard();
 
             int move;
 
@@ -95,9 +103,9 @@ public class ReversiController implements Observer {
                 gameManager.server.move(move);
                 game.switchTurns();
 
-                Platform.runLater(()->{
-                    lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
-                });
+//                Platform.runLater(()->{
+//                    lPlayerTurn.setText(game.getCurrentPlayer().getUsername());
+//                });
 
             } else {
                 clientMove();
@@ -165,6 +173,27 @@ public class ReversiController implements Observer {
     private void updateBoard(){
         Integer[][] board = game.getBoard();
 
+        //Update infoboard
+        Reversi r = (Reversi) game;
+        Platform.runLater(()->{
+            tBlack.setText(r.evalBoard(1)+"");
+            tWhite.setText(r.evalBoard(2)+"");
+
+            lPlayer1.setText(game.getPlayer1().getUsername());
+            lPlayer2.setText(game.getPlayer2().getUsername());
+
+            if(game.getCurrentPlayer().getUsername().equalsIgnoreCase(game.getPlayer1().getUsername())){
+                //Player 1's turn
+                cBlack.setStroke(Color.RED);
+                cWhite.setStroke(Color.TRANSPARENT);
+            } else {
+                //Player 2's turn
+                cBlack.setStroke(Color.TRANSPARENT);
+                cWhite.setStroke(Color.RED);
+            }
+        });
+
+        //Update gameboard
         Platform.runLater(()->{
             for (int x = 0; x < 8; x++) {
                 for (int y = 0; y < 8; y++) {
@@ -187,6 +216,51 @@ public class ReversiController implements Observer {
             }
         });
     }
+
+
+    private void makeInfoBoard(){
+
+        //Clear the info board
+        Platform.runLater(()->gameInfo.getChildren().clear());
+
+        //Black
+        cBlack = makeCircle(Color.BLACK);
+        tBlack = new Text("0");
+        tBlack.setFill(Color.WHITE);
+        tBlack.setBoundsType(TextBoundsType.VISUAL);
+        lPlayer1 = new Label("username");
+
+        StackPane stack1 = new StackPane();
+        stack1.getChildren().addAll(cBlack, tBlack);
+
+
+        //White
+        cWhite = makeCircle(Color.WHITE);
+        tWhite = new Text("0");
+        tWhite.setFill(Color.BLACK);
+        tWhite.setBoundsType(TextBoundsType.VISUAL);
+        lPlayer2 = new Label("username");
+
+        StackPane stack2 = new StackPane();
+        stack2.getChildren().addAll(cWhite, tWhite);
+
+
+        Platform.runLater(()->{
+            gameInfo.add(stack1, 0, 0);
+            gameInfo.add(lPlayer1, 1, 0);
+            gameInfo.add(stack2, 0, 1);
+            gameInfo.add(lPlayer2, 1, 1);
+        });
+
+    }
+
+    private Circle makeCircle(Color color){
+        Circle circle = new Circle(20);
+        circle.setFill(color);
+        return circle;
+    }
+
+
 
     @Override
     public void update(String message) {

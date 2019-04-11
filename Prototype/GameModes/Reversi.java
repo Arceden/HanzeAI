@@ -97,6 +97,8 @@ public class Reversi implements Game {
 
         board[x][y] = playerNum;
 
+//        System.out.println(EvalBoard(board, playerNum));
+
         return true;
     }
 
@@ -191,42 +193,7 @@ public class Reversi implements Game {
         return true;
     }
 
-
-
-
-//    public boolean calculateValidMoves(Integer[][] board){
-//        Integer[][] valid = new Integer[8][8];
-//        for(int x = 0; x < n; x++){
-//            for(int y = 0; y < n; y++){
-//                valid[x][y] = 0;
-//            }
-//        }
-//        for(int row = 0; row < n; row++){
-//            for(int column = 0; column < n; column++){
-//                if(valid[row][column] == 0){
-//                    for(int dx : dirx){
-//                        for(int dy : diry){
-//                            boolean v = valid_move(dirx, diry, row, column, board);
-//                            if(v == true){
-//                                valid[row][column] = 1;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//
-//
-//        return true;
-//    }
-
-
-
-
-
-
-
+    /** Print the CLI board of the game
     public void printBoard(){
         for(Integer[] arr : board){
             System.out.println(Arrays.toString(arr));
@@ -293,7 +260,7 @@ public class Reversi implements Game {
     }
 
     /** -- */
-    public static int EvalBoard(Integer[][] board, int player) {
+    public int evalBoard(int player) {
         int tot = 0;
         for(int y = 0; y < n; y++) {
             for (int x = 0; x < n; x++) {

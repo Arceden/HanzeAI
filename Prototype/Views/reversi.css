@@ -10,3 +10,13 @@ Button {
     -fx-vgap: 2;
     -fx-padding: 10;
 }
+
+.gameInfo {
+    -fx-vgap: 10;
+    -fx-hgap: 10;
+    -fx-padding: 10;
+}
+
+BorderPane {
+    -fx-background-color: antiquewhite;
+}

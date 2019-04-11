@@ -86,16 +86,7 @@ public class Main extends Application {
         server.registerObserver(reversiController);
         server.registerObserver(ticTacToeController);
 
-//        server.connect("localhost", 7789);
-//        server.login("Arnold");
-//        gameManager.setGame(new Reversi(new ViewPlayer("Barry"), new ViewPlayer("Arnold")));
 //        root.setCenter(reversiPane);
-//        reversiController.refresh();
-
-//        gameManager.setGame(new TicTacToe(new ViewPlayer("Rick"), new ViewPlayer("Arnold")));
-        //Set the first pane
-
-//        ticTacToeController.goGame();
         root.setCenter(loginPane);
 
         //Create a scene and place it in the stage
