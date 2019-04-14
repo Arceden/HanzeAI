@@ -99,9 +99,21 @@ public class TicTacToe extends AbstractGame {
         return board;
     }
 
+    /** Get the amount of valid moves that are left. */
     @Override
     public boolean validMovesLeft() {
         return false;
     }
 
+    /** Get the amount of flippable stones */
+    @Override
+    public int flippableCount(int x, int y) {
+        return 0;
+    }
+
+    /** Calculate the amount of valid moves */
+    @Override
+    public Integer[][] calculateValidMoves() {
+        return new Integer[0][];
+    }
 }

@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 public class NetworkPlayer extends AbstractPlayer {
 
     /** Initialize the Player by storing the username in the super class. */
@@ -7,16 +9,15 @@ public class NetworkPlayer extends AbstractPlayer {
         super(username);
     }
 
-    @Override
     /** Execute the move on behalf of the current user */
+    @Override
     public boolean move(int coordinate) {
         return false;
     }
 
-    @Override
     /** Request a move from the player and wait until it has been done */
-    public int requestMove() {
-        //Return the move
+    @Override
+    public int requestMove(Game game) {
         return 0;
     }
 

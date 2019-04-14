@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 public class ViewPlayer extends AbstractPlayer {
 
     /** Initialize the Player by storing the username in the super class. */
@@ -13,9 +15,9 @@ public class ViewPlayer extends AbstractPlayer {
         return false;
     }
 
-    @Override
     /** Request a move from the player and wait until it has been done */
-    public int requestMove() {
+    @Override
+    public int requestMove(Game game) {
         System.err.println("Do not use the "+getClass().getSimpleName()+" requestMove method." +
                 "The move is being requested from the game controller class.");
         return 0;

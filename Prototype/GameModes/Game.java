@@ -24,6 +24,12 @@ public interface Game {
     /** Check the current status of the board and detemine if the game has ended */
     public boolean hasEnded();
 
+    /** Get the amount of flippable stones */
+    public int flippableCount(int x, int y);
+
+    /** Calculate the amount of valid moves */
+    public Integer[][] calculateValidMoves();
+
     /** Get player 1 */
     public Player getPlayer1();
 
@@ -38,4 +44,5 @@ public interface Game {
 
     /** Get current state of the board */
     public Integer[][] getBoard();
+
 }

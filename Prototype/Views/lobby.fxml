@@ -24,7 +24,7 @@
             <GridPane>
                 <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="Playstyle"/>
                 <Button GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#asAI" fx:id="asAI" text="As AI" disable="true"/>
-                <Button GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#asPlayer" fx:id="asPlayer" text="As Player"/>
+                <Button GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#asPlayer" fx:id="asPlayer" text="As Human"/>
                 <Button GridPane.columnIndex="2" GridPane.rowIndex="1" onAction="#disconnect" text="Not"/>
             </GridPane>
             <GridPane>

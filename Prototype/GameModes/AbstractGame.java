@@ -46,7 +46,7 @@ public abstract class AbstractGame implements Game {
 
     /** Get the next move from the current player, if possible. */
     public int getNextMove(){
-        return playerTurn.requestMove();
+        return playerTurn.requestMove(this);
     }
 
     /** Get the game name */

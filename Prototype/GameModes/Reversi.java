@@ -58,6 +58,7 @@ public class Reversi extends AbstractGame {
     }
 
     /** Execute the move on behalf of the current player. */
+    @Override
     public boolean move(int coordinate) {
 
         int x = (int) Math.floor(coordinate / gridSize);
@@ -67,42 +68,80 @@ public class Reversi extends AbstractGame {
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
 
+        //System.out.println("Coordinaten: " + x + "    "  + y);
         board[x][y] = playerNum;
+
+        flippableCount(x,y);
 
         return true;
     }
 
-    /** -- */
-    public ArrayList BestMove(Integer[][] board, int player) {
-        int maxPoints = 0;
-        int mx = -1;
-        int my = -1;
-        int depth = 4;
-        for(int y = 0; y < gridSize; y++) {
-            for(int x = 0; x < gridSize; x++) {
-                int coordinate = (x*gridSize)+y;
-                if (moveIsValid(coordinate)) {
-                    Integer[][] tempBoard = new Integer[gridSize][gridSize];
-                    for (int f = 0; f < gridSize; f++) {
-                        tempBoard[f] = board[f];
-                    }
-                    int points = minimax.calculateMove(tempBoard, player, depth, true);
-                    if(points > maxPoints) {
-                        maxPoints = points;
-                        mx = x;
-                        my = y;
+
+
+
+
+    public Integer[][] calculateValidMoves(){
+        Integer[][] valid = new Integer[8][8];
+        for(int x = 0; x < gridSize; x++){
+            for(int y = 0; y < gridSize; y++){
+                valid[x][y] = 0;
+            }
+        }
+        for(int row = 0; row < gridSize; row++){
+            for(int column = 0; column < gridSize; column++){
+                if(valid[row][column] == 0){
+                    if(board[row][column] == 0) {
+                        for(int i = 0; i < 8; i++){
+                            boolean v = valid_move(dirx[i], diry[i], row, column);
+                            if (v == true) {
+                                valid[row][column] = 1;
+                            }
+                        }
                     }
                 }
             }
         }
-        ArrayList<Integer> coords = new ArrayList<Integer>();
-        coords.add(mx);
-        coords.add(my);
-        return coords;
+//        System.out.println("Valid moves:");
+//        for(Integer[] arr : valid){
+//            System.out.println(Arrays.toString(arr));
+//        }
+        return valid;
+    }
+
+    public boolean valid_move(int dirx, int diry, int x, int y) {
+        int playerNum = 0;
+        if (playerTurn == player1) playerNum = 1;
+        if (playerTurn == player2) playerNum = 2;
+        int totctr = 0;
+        Integer[][] tempboard = new Integer[gridSize][gridSize];
+//        for (int i = 0; i < n; i++) {
+//            tempboard[i] = board[i];
+//        }
+        for (int d = 0; d < gridSize; d++) {
+            int ctr = 0;
+            for (int i = 0; i < gridSize; i++) {
+                int dx = x + dirx * (i + 1);
+                int dy = y + diry * (i + 1);
+                if (dx < 0 || dx > gridSize - 1 || dy < 0 || dy > gridSize - 1) {
+                    ctr = 0;
+                    break;
+                } else if (board[dx][dy] == playerNum) {
+                    break;
+                } else if (board[dx][dy] == 0) {
+                    ctr = 0;
+                    break;
+                } else {
+                    ctr += 1;
+                }
+            }
+            totctr += ctr;
+        }
+        if(totctr < 1) return false;
+        else return true;
     }
 
     /** Flip the stones. totctr = amount of stones flipped */
-    private int flippableCount(int x, int y) {
+    public int flippableCount(int x, int y) {
         int playerNum=0;
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
@@ -139,29 +178,28 @@ public class Reversi extends AbstractGame {
 
         return totctr;
     }
-
     /** Check if the specified move is valid */
-    public boolean moveIsValid(int coordinate) {
-        int x = (int) Math.floor(coordinate / gridSize);
-        int y = (coordinate % gridSize);
-        if (x < 0 || x > gridSize - 1 || y < 0 || y > gridSize - 1) {
-            System.err.println("Out of bounds");
-            return false;
-        }
-        if(board[x][y] != 0) {
-            System.err.println("Space already occupied");
-            return false;
-        }
-
-        //Check if stones are flippable
-        int flipCount = flippableCount(x, y);
-        if(flipCount<1){
-            System.err.println("No flippable stones with this move.");
-            return false;
-        }
-
-        return true;
-    }
+//    public boolean moveIsValid(int coordinate) {
+//        int x = (int) Math.floor(coordinate / n);
+//        int y = (coordinate % n);
+//        if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
+//            System.err.println("Out of bounds");
+//            return false;
+//        }
+//        if(board[x][y] != 0) {
+//            System.err.println("Space already occupied");
+//            return false;
+//        }
+//
+//        //Check if stones are flippable
+//        int flipCount = flippableCount(x, y);
+//        if(flipCount<1){
+//            System.err.println("No flippable stones with this move.");
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
     /** Check wether or not the game has ended.
      *  Return true if it has ended. */
@@ -213,6 +251,11 @@ public class Reversi extends AbstractGame {
             }
         }
         return tot;
+    }
+
+    @Override
+    public boolean moveIsValid(int coordinate) {
+        return false;
     }
 
 }

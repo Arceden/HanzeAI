@@ -20,11 +20,14 @@ public class AIPlayer extends AbstractPlayer {
         return false;
     }
 
-    @Override
     /** Request a move from the player and wait until it has been done */
-    public int requestMove() {
-        //return algorithm.calculateMove();
-        return algorithm.calculateMove(game.getBoard(),1,4,true);
+    @Override
+    public int requestMove(Game game) {
+        //System.out.println(game.getCurrentPlayer().getUsername());
+        int player;
+        if(game.getCurrentPlayer() == game.getPlayer1()) player = 1;
+        else player = 2;
+        return algorithm.bestMove(game.getBoard(), player, game);
     }
 
 }

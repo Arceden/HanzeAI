@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 import java.util.Scanner;
 
 public class InputPlayer extends AbstractPlayer {
@@ -12,15 +14,15 @@ public class InputPlayer extends AbstractPlayer {
         scanner = new Scanner(System.in);
     }
 
-    @Override
     /** Execute the move on behalf of the current user */
+    @Override
     public boolean move(int coordinate) {
         return false;
     }
 
-    @Override
     /** Request a move from the player and wait until it has been done */
-    public int requestMove() {
+    @Override
+    public int requestMove(Game game) {
         System.out.println("Please enter a coordinate: ");
         int input = scanner.nextInt();
         //perform check(s) on the input
