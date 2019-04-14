@@ -25,9 +25,12 @@ public class AIPlayer implements Player {
     }
 
     @Override
-    public int requestMove() {
-        //return algorithm.calculateMove();
-        return algorithm.calculateMove(game.getBoard(),1,4,true);
+    public int requestMove(Game game) {
+        //System.out.println(game.getCurrentPlayer().getUsername());
+        int player;
+        if(game.getCurrentPlayer() == game.getPlayer1()) player = 1;
+        else player = 2;
+        return algorithm.bestMove(game.getBoard(), player, game);
     }
 
     public String getUsername() {

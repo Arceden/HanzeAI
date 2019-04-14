@@ -95,9 +95,12 @@ public class ReversiController implements Observer {
                 move=pressedCell;
             } else {
                 move = game.getNextMove();
+                //game.switchTurns();
             }
 
-            if (game.moveIsValid(move)){
+            int x = (int) Math.floor(move / 8);
+            int y = (move % 8);
+            if (game.calculateValidMoves()[x][y] != 0){
 
                 game.move(move);
                 gameManager.server.move(move);
@@ -138,7 +141,7 @@ public class ReversiController implements Observer {
         if(game.getCurrentPlayer().getUsername().equalsIgnoreCase(gameManager.getUsername()))
             game.switchTurns();
 
-        game.moveIsValid(move);
+        //game.moveIsValid(move);
         game.move(move);
         updateBoard();
 
@@ -176,8 +179,8 @@ public class ReversiController implements Observer {
         //Update infoboard
         Reversi r = (Reversi) game;
         Platform.runLater(()->{
-            tBlack.setText(r.evalBoard(1)+"");
-            tWhite.setText(r.evalBoard(2)+"");
+            //tBlack.setText(r.evalBoard(1)+"");
+            //tWhite.setText(r.evalBoard(2)+"");
 
             lPlayer1.setText(game.getPlayer1().getUsername());
             lPlayer2.setText(game.getPlayer2().getUsername());

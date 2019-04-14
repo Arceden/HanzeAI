@@ -25,6 +25,9 @@ public interface Game {
     /** Check the current status of the board and detemine if the game has ended */
     public boolean hasEnded();
 
+    public int flippableCount(int x, int y);
+    public Integer[][] calculateValidMoves();
+
     /** Place the player in the game */
     public void setPlayer1(Player player1);
     public void setPlayer2(Player player2);

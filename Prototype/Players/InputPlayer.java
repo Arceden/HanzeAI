@@ -19,6 +19,11 @@ public class InputPlayer implements Player {
     }
 
     @Override
+    public int requestMove(Game game) {
+        return 0;
+    }
+
+
     public int requestMove() {
         int input = scanner.nextInt();
         //perform check(s) on the input

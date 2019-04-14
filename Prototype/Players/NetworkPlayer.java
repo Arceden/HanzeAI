@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 public class NetworkPlayer implements Player {
 
     private String username;
@@ -14,12 +16,10 @@ public class NetworkPlayer implements Player {
     }
 
     @Override
-    public int requestMove() {
-        //Observe the server messages for a move
-
-        //Return the move
+    public int requestMove(Game game) {
         return 0;
     }
+
 
     @Override
     public String getUsername() {

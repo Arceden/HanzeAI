@@ -1,5 +1,7 @@
 package Players;
 
+import GameModes.Game;
+
 public class ViewPlayer implements Player {
 
     private String username;
@@ -15,7 +17,7 @@ public class ViewPlayer implements Player {
 
     @Override
     /** Dont use this method. The move is being received at the controller */
-    public int requestMove() {
+    public int requestMove(Game game) {
         return 0;
     }
 

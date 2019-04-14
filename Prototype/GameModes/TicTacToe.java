@@ -77,6 +77,16 @@ public class TicTacToe implements Game {
         return !running;
     }
 
+    @Override
+    public int flippableCount(int x, int y) {
+        return 0;
+    }
+
+    @Override
+    public Integer[][] calculateValidMoves() {
+        return new Integer[0][];
+    }
+
     private boolean gameLogic(int input, int row, int col)
     {
         return ((board[row][0] == input &&
@@ -148,7 +158,7 @@ public class TicTacToe implements Game {
 
     @Override
     public int getNextMove() {
-        return playerTurn.requestMove();
+        return playerTurn.requestMove(this);
     }
 
     @Override
