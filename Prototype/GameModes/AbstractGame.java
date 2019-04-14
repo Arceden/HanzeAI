@@ -2,6 +2,8 @@ package GameModes;
 
 import Players.Player;
 
+import java.util.Arrays;
+
 public abstract class AbstractGame implements Game {
 
     /* Store players */
@@ -27,6 +29,14 @@ public abstract class AbstractGame implements Game {
             playerTurn=player2;
         else
             playerTurn=player1;
+    }
+
+    /** Print the board in the terminal */
+    private void printBoard()
+    {
+        for(Integer[] arr : board){
+            System.out.println(Arrays.toString(arr));
+        }
     }
 
     /** Start the game by setting the correct starting values. */

@@ -155,6 +155,7 @@ public class LobbyController extends ObservationSubject implements Observer {
         gameManager.server.subscribe("Reversi");
     }
 
+    /** Switch the current playstyle to Human */
     @FXML
     void asPlayer(){
         gameManager.setPlayer(new ViewPlayer(gameManager.getUsername()));
@@ -163,6 +164,7 @@ public class LobbyController extends ObservationSubject implements Observer {
         System.out.println("Playing as human!");
     }
 
+    /** Switch the current playstyle to AI */
     @FXML
     void asAI(){
         gameManager.setPlayer(new AIPlayer(gameManager.getUsername()));
@@ -171,13 +173,19 @@ public class LobbyController extends ObservationSubject implements Observer {
         System.out.println("Playing as AI!");
     }
 
+    /** Challenge the selected player from the playerView
+     *  This function only stores the selectedPlayer into the
+     *  selectedPlayer variable. The rest is being taken care of
+     *  by the context menu. */
     @FXML
-    public void challengePlayer(MouseEvent event){
+    public void challengePlayer(){
         try {
+            // Get the selected player from the playerView
+            // Throws a NullPointerException if no one was selected
             selectedPlayer = playerView.getSelectionModel().getSelectedItem();
 
-            //Check if the challenged player is yourself. If so, set to null.
-            //You cannot challenge yourself
+            // Check if the challenged player is yourself. If so, set to null.
+            // You cannot challenge yourself
             if (selectedPlayer.equalsIgnoreCase(gameManager.getUsername())) {
                 selectedPlayer=null;
             }
@@ -188,21 +196,30 @@ public class LobbyController extends ObservationSubject implements Observer {
         }
     }
 
+    /** Send a accepted challenge to the server */
     @FXML
     void acceptChallenge(){
         try {
+            // Get the selected player from the challengerView
+            // Throws a NullPointerException if no one was selected
             Text selectedPlayer = challengerView.getSelectionModel().getSelectedItem();
             String challengeNumber = (String) selectedPlayer.getUserData();
+
+            //Send the challenge number to the server
             gameManager.server.send("challenge accept " + challengeNumber);
 
-            int i = challengerList.indexOf(selectedPlayer);
-            challengerList.remove(i);
+            //Remove the challenger from the challenge view
+            Platform.runLater(()->{
+                int i = challengerList.indexOf(selectedPlayer);
+                challengerList.remove(i);
+            });
         } catch (NullPointerException ex){
             //This happens when the listview is clicked but noone was selected
             //ignore
         }
     }
 
+    /** Disconnect from the server and go back to the login screen */
     @FXML
     public void disconnect(){
         playerlistThread.interrupt();
@@ -213,23 +230,25 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     /**
      * Start the match
-     * This method initializes the Game variable in the GameManager.
-     * @param message
+     * This method initializes the Game variable in the GameManager along with both players
+     * @param message - String from the server
      */
     private void startMatch(String message){
         //Parse the server data into a map
         Map<String, String> data = gameManager.server.parseData("SVR GAME MATCH ", message);
+
+        // Declare an empty game object
         Game game=null;
 
+        // Declare empty player objects
+        // These can become either an AIPlayer, InputPlayer, NetworkPlayer or a ViewPlayer.
+        Player player1;
+        Player player2;
+
+        // Get the server data to start a game
         String GAMETYPE = data.get("GAMETYPE");
         String FIRSTPLAYER = data.get("PLAYERTOMOVE");
         String OPPONENT = data.get("OPPONENT");
-
-        System.out.println(OPPONENT);
-        System.out.println(gameManager.getPlayer().getUsername());
-
-        Player player1;
-        Player player2;
 
         //Set the players
         if(FIRSTPLAYER.equalsIgnoreCase(gameManager.getUsername())) {
@@ -248,9 +267,6 @@ public class LobbyController extends ObservationSubject implements Observer {
         else if(GAMETYPE.equalsIgnoreCase("Tic-tac-toe"))
             game = new TicTacToe(player1, player2);
 
-        System.out.println("First to play: \t"+player1.getUsername());
-        System.out.println("Last to play: \t"+player2.getUsername());
-
         //Place the game in the game manager
         gameManager.setGame(game);
 
@@ -264,11 +280,13 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     /** Another player has challenged you. Show this on screen */
     private void challengerApproaches(String message){
+        //Parse the server message into a usable Map
         Map<String, String> data = gameManager.server.parseData("SVR GAME CHALLENGE ", message);
         String challenger = data.get("CHALLENGER");
         String challengeNumber = data.get("CHALLENGENUMBER");
         String gameType = data.get("GAMETYPE");
 
+        //Update the view with the new challenger
         Platform.runLater(()->{
             Text tChallenger = new Text(gameType+": "+challenger);
             tChallenger.setUserData(challengeNumber);
@@ -276,12 +294,15 @@ public class LobbyController extends ObservationSubject implements Observer {
         });
     }
 
-    /* Remove the cancelled challenge from the list */
+    /** Remove the cancelled challenge from the list */
     private void challengerCancellled(String message){
-        System.out.println(message);
+        //Parse the server message into a usable Map
         Map<String, String> data = gameManager.server.parseData("SVR GAME CHALLENGE CANCELLED ", message);
+
+        //Loop through the challengers until the correct challenger has been found
         for(Text challenger: challengerList){
             if(data.get("CHALLENGENUMBER").equalsIgnoreCase((String)challenger.getUserData())){
+                //Remove the challenger from the view
                 Platform.runLater(()->{
                     int i = challengerList.indexOf(challenger);
                     challengerList.remove(i);
@@ -297,6 +318,9 @@ public class LobbyController extends ObservationSubject implements Observer {
      *  Manage incoming challenges
      *  Manage canceled challenges
      *  Receive start match details
+     *
+     *  This method is being called from the ServerHandler class and is
+     *  being triggered by the listen() method.
      */
     @Override
     public void update(String message) {

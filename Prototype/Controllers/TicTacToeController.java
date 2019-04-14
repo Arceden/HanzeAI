@@ -21,28 +21,18 @@ import java.util.Map;
 
 public class TicTacToeController implements Observer {
 
-    GameManager gameManager;
-    Game game;
-    String player1;
-    String player2;
+    private GameManager gameManager;
+    private Game game;
 
     private Button[][] cells = new Button[8][8];
-    boolean running = false;
-    Thread gameThread;
-    int networkCell;
-    int clientCell;
+    private boolean running = false;
+    private Thread gameThread;
+    private int networkCell;
+    private int clientCell;
 
     @FXML GridPane gamePane;
     @FXML Label lPlayer1;
     @FXML Label lPlayer2;
-
-    private boolean isFirstPlayer;
-
-    public TicTacToeController()
-    {
-        System.out.println("TicTacToeController");
-        //this.game = gameManager.getGame();
-    }
 
     public void setGameManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -64,60 +54,7 @@ public class TicTacToeController implements Observer {
 
     }
 
-    @FXML
-    public void methodClickHandler()
-    {
-
-    }
-
-    @FXML
-    /**
-     * @param event
-     */
-    public void buttonClickHandler(ActionEvent event)
-    {
-//
-//        Button clickedButton = (Button) event.getTarget();
-//        String buttonLabel = clickedButton.getText();
-//
-//        if("".equals(buttonLabel) && isFirstPlayer)
-//        {
-//            player1 = gameManager.getUsername();
-//            //game.setPlayer1(new Play);
-//
-//            clickedButton.setText("X");
-//            isFirstPlayer = false;
-//        }
-//        else if("".equals(buttonLabel))
-//        {
-//            player2 = gameManager.getUsername();
-//            clickedButton.setText("O");
-//            isFirstPlayer = true;
-//        }
-//
-//        if(gameLogic())
-//        {
-//            if(isFirstPlayer)
-//            {
-//                System.out.println("The winner is " + player1);
-//            }
-//            else
-//            {
-//                System.out.println("The winner is " + player2);
-//            }
-//            System.out.println("game over");
-//        }
-    }
-
-//    private void highlightWinningCombo(Button first, Button second, Button third)
-//    {
-//        first.getStyleClass().add("winning-button");
-//        second.getStyleClass().add("winning-button");
-//        third.getStyleClass().add("winning-button");
-//    }
-
-
-    public void moveHandler(){
+    private void moveHandler(){
 
         gameThread = new Thread(()->{
 
@@ -174,8 +111,7 @@ public class TicTacToeController implements Observer {
 
     }
 
-
-    public void clientMove(){
+    private void clientMove(){
         moveHandler();
     }
 

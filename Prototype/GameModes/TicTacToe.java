@@ -1,11 +1,6 @@
 package GameModes;
 
-import Observer.Observer;
 import Players.Player;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 public class TicTacToe extends AbstractGame {
 
@@ -13,17 +8,19 @@ public class TicTacToe extends AbstractGame {
 
     private int gridSize = 3;
 
+    /** Store the initialized players and initialize the game board. */
     public TicTacToe(Player player1, Player player2){
         super(player1, player2);
-        this.name = "Tic-tac-toe";
-        playerTurn=player1;
-        running=true;
 
+        // Set the game name
+        this.name = "Tic-tac-toe";
+
+        // Initialize the board
         this.board = new Integer[gridSize][gridSize];
         this.board = initBoard(board);
     }
 
-    @Override
+    /** Execute the move on behalf of the current player. */
     public boolean move(int coordinate) {
         System.out.println("Moving "+playerTurn.getUsername()+" to "+coordinate+"!");
 
@@ -50,7 +47,7 @@ public class TicTacToe extends AbstractGame {
         return true;
     }
 
-    @Override
+    /** Check if the specified move is valid */
     public boolean moveIsValid(int coordinate)
     {
         int x = (int) Math.floor(coordinate / 3);
@@ -58,11 +55,12 @@ public class TicTacToe extends AbstractGame {
         return board[x][y]==0;
     }
 
-    @Override
+    /** Check the current status of the board and detemine if the game has ended */
     public boolean hasEnded() {
         return !running;
     }
 
+    /** Check the current state of the board by checking the game rules. */
     private boolean gameLogic(int input, int row, int col)
     {
         return ((board[row][0] == input &&
@@ -82,11 +80,14 @@ public class TicTacToe extends AbstractGame {
                 board[2][0] == input));
     }
 
-    @Override
+    /** Start the game by preparing the board and choose who starts
+     *  (or retreive the starting player if online) */
     public void start() {
-
+        playerTurn=player1;
+        running=true;
     }
 
+    /** Generate a new game board with the default starting positions. */
     private Integer[][] initBoard(Integer[][] board) {
         // setup the board
         for(int x = 0; x < gridSize; x++){
@@ -96,13 +97,6 @@ public class TicTacToe extends AbstractGame {
         }
 
         return board;
-    }
-
-    private void printBoard()
-    {
-        for(Integer[] arr : board){
-            System.out.println(Arrays.toString(arr));
-        }
     }
 
     @Override
