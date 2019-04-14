@@ -171,6 +171,9 @@ public class TicTacToeController implements Observer {
         });
     }
 
+    void stopGame(){
+        running=false;
+    }
 
     @Override
     public void update(String message) {
@@ -183,6 +186,15 @@ public class TicTacToeController implements Observer {
             switch (args[1]) {
                 case "GAME":
                     switch (args[2]) {
+                        case "WIN":
+                            stopGame();
+                            break;
+                        case "LOSS":
+                            stopGame();
+                            break;
+                        case "DRAW":
+                            stopGame();
+                            break;
                         case "MOVE":
                             //Received a new move
                             Map<String, String> data = gameManager.server.parseData("SVR GAME MOVE ", message);

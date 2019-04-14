@@ -216,6 +216,9 @@ public class ReversiController implements Observer {
         });
     }
 
+    void stopGame(){
+        running=false;
+    }
 
     private void makeInfoBoard(){
 
@@ -272,6 +275,15 @@ public class ReversiController implements Observer {
             switch (args[1]) {
                 case "GAME":
                     switch (args[2]) {
+                        case "WIN":
+                            stopGame();
+                            break;
+                        case "LOSS":
+                            stopGame();
+                            break;
+                        case "DRAW":
+                            stopGame();
+                            break;
                         case "MOVE":
                             //Received a new move
                             Map<String, String> data = gameManager.server.parseData("SVR GAME MOVE ", message);
