@@ -7,24 +7,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class TicTacToe implements Game {
+public class TicTacToe extends AbstractGame {
 
-    private Player player1;
-    private Player player2;
-    public Player playerTurn;
+    private boolean running;
 
-    boolean running;
-
-    public final String name = "TicTacToe";
-
-    private static int n = 3;
-    private Integer[][] board = new Integer[3][3];
+    private int gridSize = 3;
 
     public TicTacToe(Player player1, Player player2){
-        this.player1 = player1;
-        this.player2 = player2;
+        super(player1, player2);
+        this.name = "Tic-tac-toe";
         playerTurn=player1;
         running=true;
+
+        this.board = new Integer[gridSize][gridSize];
         this.board = initBoard(board);
     }
 
@@ -63,15 +58,6 @@ public class TicTacToe implements Game {
         return board[x][y]==0;
     }
 
-    public void switchTurns(){
-        printBoard();
-        if(playerTurn.getUsername().equalsIgnoreCase(player1.getUsername()))
-            playerTurn=player2;
-        else
-            playerTurn=player1;
-
-    }
-
     @Override
     public boolean hasEnded() {
         return !running;
@@ -101,37 +87,10 @@ public class TicTacToe implements Game {
 
     }
 
-    @Override
-    public Player getCurrentPlayer() {
-        return playerTurn;
-    }
-
-    @Override
-    public void setPlayer1(Player player1) {
-
-    }
-
-    @Override
-    public void setPlayer2(Player player2) {
-
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void update(String message) {
-        //Handle server observations
-        System.err.println("[TicTacToe] "+message);
-    }
-
-
-    private Integer[][] initBoard(Integer[][] board)
-    {
+    private Integer[][] initBoard(Integer[][] board) {
         // setup the board
-        for(int x = 0; x < 3; x++){
-            for(int y =0; y < 3; y++){
+        for(int x = 0; x < gridSize; x++){
+            for(int y =0; y < gridSize; y++){
                 board[x][y] = 0;
             }
         }
@@ -147,32 +106,8 @@ public class TicTacToe implements Game {
     }
 
     @Override
-    public int getNextMove() {
-        return playerTurn.requestMove();
-    }
-
-    @Override
     public boolean validMovesLeft() {
         return false;
     }
 
-    @Override
-    public Player getPlayer1() {
-        return player1;
-    }
-
-    @Override
-    public Player getPlayer2() {
-        return player2;
-    }
-
-    @Override
-    public String getCurrentStatus() {
-        return null;
-    }
-
-    @Override
-    public Integer[][] getBoard() {
-        return board;
-    }
 }

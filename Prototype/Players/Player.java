@@ -7,5 +7,6 @@ public interface Player {
     /** Request a move from the player and wait until it has been done */
     public int requestMove();
 
+    /** Return the player's username */
     public String getUsername();
 }

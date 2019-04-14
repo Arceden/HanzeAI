@@ -2,6 +2,7 @@ package GameModes;
 
 import Algorithms.AI;
 import Players.AIPlayer;
+import Players.AbstractPlayer;
 import Players.Player;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -12,92 +13,61 @@ import java.util.Random;
 
 import Algorithms.*;
 
-public class Reversi implements Game {
-
-    private Player player1;
-    private Player player2;
-    public Player playerTurn = player2;
+public class Reversi extends AbstractGame {
 
     private boolean player1Pass;
     private boolean player2Pass;
 
-    private static int n = 8;
+    /* Store Reversi board information */
+    private static int gridSize = 8;
     private Integer[] dirx = {-1, 0, 1, -1, 1, -1, 0, 1};
     private Integer[] diry = {-1, -1, -1, 0, 0, 1, 1, 1};
 
-    public final String name = "Reversi";
-    private Integer[][] board = new Integer[n][n];
+    /* Store the AI Algorithm */
     private AI minimax = new Minimax(this);
 
+    /** Store the initialized players and initialize the game board. */
     public Reversi(Player player1, Player player2){
-        this();
-        this.player1 = player1;
-        this.player2 = player2;
-    }
+        super(player1, player2);
 
-    public Reversi(){
+        //Set the game name
+        this.name = "Reversi";
+
+        //Initialize the board
+        this.board = new Integer[gridSize][gridSize];
         this.board = InitBoard(board);
     }
 
-
-
-    /** -- */
-    public Integer[][] InitBoard(Integer[][] board) {
-        for(int x = 0; x < n; x++){
-            for(int y =0; y < n; y++){
+    /** Generate a new game board with the default starting positions. */
+    private Integer[][] InitBoard(Integer[][] board) {
+        for(int x = 0; x < gridSize; x++){
+            for(int y =0; y < gridSize; y++){
                 board[x][y] = 0;
             }
         }
-        if(n % 2 == 0){
-            int z = (n - 2) / 2;
+        if(gridSize % 2 == 0){
+            int z = (gridSize - 2) / 2;
             board[z][z] = 2;
-            board[n - 1 - z][z] = 1;
-            board[z][n - 1 - z] = 1;
-            board[n - 1 - z][n - 1 - z] = 2;
+            board[gridSize - 1 - z][z] = 1;
+            board[z][gridSize - 1 - z] = 1;
+            board[gridSize - 1 - z][gridSize - 1 - z] = 2;
             return board;
         }else {
             return null;
         }
     }
 
-    /** -- */
-    public void switchTurns(){
-
-        if(playerTurn.getUsername().equalsIgnoreCase(player1.getUsername()))
-            playerTurn=player2;
-        else
-            playerTurn=player1;
-
-    }
-
-    /** Get current state of the board */
-    public Integer[][] getBoard(){
-        return board;
-    }
-
-    @Override
-    /** Player 1 is first to play */
-    public void start() {
-        playerTurn=player1;
-    }
-
-    public int getNextMove(){
-        return playerTurn.requestMove();
-    }
-
-    @Override
+    /** Execute the move on behalf of the current player. */
     public boolean move(int coordinate) {
 
-        int x = (int) Math.floor(coordinate / n);
-        int y = (coordinate % n);
+        int x = (int) Math.floor(coordinate / gridSize);
+        int y = (coordinate % gridSize);
 
         int playerNum=0;
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
 
         board[x][y] = playerNum;
-
-//        System.out.println(EvalBoard(board, playerNum));
 
         return true;
     }
@@ -108,12 +78,12 @@ public class Reversi implements Game {
         int mx = -1;
         int my = -1;
         int depth = 4;
-        for(int y = 0; y < n; y++) {
-            for(int x = 0; x < n; x++) {
-                int coordinate = (x*n)+y;
+        for(int y = 0; y < gridSize; y++) {
+            for(int x = 0; x < gridSize; x++) {
+                int coordinate = (x*gridSize)+y;
                 if (moveIsValid(coordinate)) {
-                    Integer[][] tempBoard = new Integer[n][n];
-                    for (int f = 0; f < n; f++) {
+                    Integer[][] tempBoard = new Integer[gridSize][gridSize];
+                    for (int f = 0; f < gridSize; f++) {
                         tempBoard[f] = board[f];
                     }
                     int points = minimax.calculateMove(tempBoard, player, depth, true);
@@ -132,22 +102,22 @@ public class Reversi implements Game {
     }
 
     /** Flip the stones. totctr = amount of stones flipped */
-    public int flippableCount(int x, int y) {
+    private int flippableCount(int x, int y) {
         int playerNum=0;
         if(playerTurn==player1) playerNum=1;
         if(playerTurn==player2) playerNum=2;
 
         int totctr = 0;
-        Integer[][] tempboard = new Integer[n][n];
-        for(int i = 0; i < n; i++){
+        Integer[][] tempboard = new Integer[gridSize][gridSize];
+        for(int i = 0; i < gridSize; i++){
             tempboard[i] = board[i];
         }
-        for (int d = 0; d < n; d++) {
+        for (int d = 0; d < gridSize; d++) {
             int ctr = 0;
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < gridSize; i++) {
                 int dx = x + dirx[d] * (i + 1);
                 int dy = y + diry[d] * (i + 1);
-                if (dx < 0 || dx > n - 1 || dy < 0 || dy > n - 1) {
+                if (dx < 0 || dx > gridSize - 1 || dy < 0 || dy > gridSize - 1) {
                     ctr = 0;
                     break;
                 } else if (tempboard[dx][dy] == playerNum) {
@@ -170,11 +140,11 @@ public class Reversi implements Game {
         return totctr;
     }
 
-    /** -- */
+    /** Check if the specified move is valid */
     public boolean moveIsValid(int coordinate) {
-        int x = (int) Math.floor(coordinate / n);
-        int y = (coordinate % n);
-        if (x < 0 || x > n - 1 || y < 0 || y > n - 1) {
+        int x = (int) Math.floor(coordinate / gridSize);
+        int y = (coordinate % gridSize);
+        if (x < 0 || x > gridSize - 1 || y < 0 || y > gridSize - 1) {
             System.err.println("Out of bounds");
             return false;
         }
@@ -193,15 +163,9 @@ public class Reversi implements Game {
         return true;
     }
 
-    /** Print the CLI board of the game
-    public void printBoard(){
-        for(Integer[] arr : board){
-            System.out.println(Arrays.toString(arr));
-        }
-    }
-
+    /** Check wether or not the game has ended.
+     *  Return true if it has ended. */
     @Override
-    /** TODO: Check if game field is full */
     public boolean hasEnded() {
         if(player1Pass && player2Pass){
             return true;
@@ -210,9 +174,9 @@ public class Reversi implements Game {
     }
 
     public boolean validMovesLeft(){
-        for(int x = 0; x < n; x++){
-            for(int y = 0; y < n; y++){
-                if(moveIsValid((x*n)+y)){
+        for(int x = 0; x < gridSize; x++){
+            for(int y = 0; y < gridSize; y++){
+                if(moveIsValid((x*gridSize)+y)){
                     player1Pass = false;
                     player2Pass = false;
                     return true;
@@ -222,53 +186,24 @@ public class Reversi implements Game {
         System.out.println("No possible moves left for this player!");
         if (playerTurn == player1) {
             player1Pass = true;
-//            switchTurns();
         }
         else{
             player2Pass = true;
-//            switchTurns();
         }
         return false;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Player getCurrentPlayer() {
-        return playerTurn;
-    }
-
-
-
-    @Override
-    public void setPlayer1(Player player1) {
-        this.player1 = player1;
-    }
-
-    @Override
-    public void setPlayer2(Player player2) {
-        this.player2 = player2;
-    }
-
-    @Override
-    public String getCurrentStatus()
-    {
-        return "";
-    }
-
-    /** -- */
+    /** Evaluate the current board's status for the specified player number.
+     *  Returns the amount of colored stones for player #. */
     public int evalBoard(int player) {
         int tot = 0;
-        for(int y = 0; y < n; y++) {
-            for (int x = 0; x < n; x++) {
+        for(int y = 0; y < gridSize; y++) {
+            for (int x = 0; x < gridSize; x++) {
                 if(board[y][x] == player) {
-                    if (x == 0 || x == n - 1 && y == 0 || y == n - 1) {
+                    if (x == 0 || x == gridSize - 1 && y == 0 || y == gridSize - 1) {
                         tot += 4;
                     }
-                    else if(x == 0 || x == n - 1 || y == 0 || y == n - 1) {
+                    else if(x == 0 || x == gridSize - 1 || y == 0 || y == gridSize - 1) {
                         tot += 2;
                     }
                     else {
@@ -280,13 +215,4 @@ public class Reversi implements Game {
         return tot;
     }
 
-    @Override
-    public Player getPlayer1() {
-        return player1;
-    }
-
-    @Override
-    public Player getPlayer2() {
-        return player2;
-    }
 }

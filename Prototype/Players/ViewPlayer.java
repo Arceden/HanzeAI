@@ -1,26 +1,24 @@
 package Players;
 
-public class ViewPlayer implements Player {
+public class ViewPlayer extends AbstractPlayer {
 
-    private String username;
-
+    /** Initialize the Player by storing the username in the super class. */
     public ViewPlayer(String username){
-        this.username=username;
+        super(username);
     }
 
     @Override
+    /** Execute the move on behalf of the current user */
     public boolean move(int coordinate) {
         return false;
     }
 
     @Override
-    /** Dont use this method. The move is being received at the controller */
+    /** Request a move from the player and wait until it has been done */
     public int requestMove() {
+        System.err.println("Do not use the "+getClass().getSimpleName()+" requestMove method." +
+                "The move is being requested from the game controller class.");
         return 0;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
 }

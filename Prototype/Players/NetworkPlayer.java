@@ -1,28 +1,23 @@
 package Players;
 
-public class NetworkPlayer implements Player {
+public class NetworkPlayer extends AbstractPlayer {
 
-    private String username;
-
+    /** Initialize the Player by storing the username in the super class. */
     public NetworkPlayer(String username){
-        this.username=username;
+        super(username);
     }
 
     @Override
+    /** Execute the move on behalf of the current user */
     public boolean move(int coordinate) {
         return false;
     }
 
     @Override
+    /** Request a move from the player and wait until it has been done */
     public int requestMove() {
-        //Observe the server messages for a move
-
         //Return the move
         return 0;
     }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
 }

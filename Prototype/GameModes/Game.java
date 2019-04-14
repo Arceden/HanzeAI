@@ -2,14 +2,11 @@ package GameModes;
 
 import Players.Player;
 
-import java.util.ArrayList;
-
-
 public interface Game {
     /** Request the next player to move */
     public int getNextMove();
 
-    /** Execute the move and return true if it has been successfully executed */
+    /** Execute the move on behalf of the current player. */
     public boolean move(int coordinate);
 
     public void switchTurns();
@@ -25,17 +22,18 @@ public interface Game {
     /** Check the current status of the board and detemine if the game has ended */
     public boolean hasEnded();
 
-    /** Place the player in the game */
-    public void setPlayer1(Player player1);
-    public void setPlayer2(Player player2);
-
-    /** Get player data */
+    /** Get player 1 */
     public Player getPlayer1();
+
+    /** Get player 2 */
     public Player getPlayer2();
 
+    /** Get the game name */
     public String getName();
-    public Player getCurrentPlayer();
-    public String getCurrentStatus();
 
+    /** Get the player who is playing right now */
+    public Player getCurrentPlayer();
+
+    /** Get current state of the board */
     public Integer[][] getBoard();
 }
