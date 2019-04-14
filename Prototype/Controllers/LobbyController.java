@@ -30,6 +30,7 @@ public class LobbyController extends ObservationSubject implements Observer {
     ObservableList<String> scoreList = FXCollections.observableArrayList();
 
     String selectedPlayer;
+    boolean beenHereBefore = false;
 
     @FXML private Button asAI;
     @FXML private Button asPlayer;
@@ -49,7 +50,12 @@ public class LobbyController extends ObservationSubject implements Observer {
 
     public void refresh(){
         //Default playstyle
-        asPlayer();
+        //If the player has not been defined
+        if(gameManager.getPlayer()==null)
+            asPlayer();
+        //If the player is going under a new username
+        if(!gameManager.getUsername().equalsIgnoreCase(gameManager.getPlayer().getUsername()))
+            asPlayer();
 
         //Retreive gamelist and playerlist
         gameManager.server.getGamelist();
