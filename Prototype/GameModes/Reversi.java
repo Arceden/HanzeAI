@@ -306,28 +306,6 @@ public class Reversi implements Game {
         return "";
     }
 
-    /** -- */
-//    public int evalBoard(int player) {
-//
-//        //if(playerTurn == player1)
-//        int tot = 0;
-//        for(int y = 0; y < n; y++) {
-//            for (int x = 0; x < n; x++) {
-//                if(board[y][x] == player) {
-//                    if (x == 0 || x == n - 1 && y == 0 || y == n - 1) {
-//                        tot += 4;
-//                    }
-//                    else if(x == 0 || x == n - 1 || y == 0 || y == n - 1) {
-//                        tot += 2;
-//                    }
-//                    else {
-//                        tot += 1;
-//                    }
-//                }
-//            }
-//        }
-//        return tot;
-//    }
 
     @Override
     public Player getPlayer1() {

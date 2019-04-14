@@ -4,13 +4,16 @@ import GameModes.Game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.Integer.min;
 import static java.lang.StrictMath.max;
 
-public class Minimax implements AI, Runnable {
+public class Minimax implements AI {
     public static final String name = "Minimax";
     private Game game;
+    private Timer time;
 
     private int minEvalBoard = -1;
     private int maxEvalBoard = 8 * 8 + 4 * 8 + 4 + 1;
@@ -19,38 +22,35 @@ public class Minimax implements AI, Runnable {
 
     public Minimax(Game newGame) {
 
+        this.time = new Timer();
+
     }
 
 
     public int calculateMove(Integer[][] tempBoard, int player, int depth, boolean maximizingPlayer) {
         int bestValue;
-        if (!timeLeft) {
+        if (depth == 0) {
             return evalBoard(tempBoard);
         }
         if (maximizingPlayer) {
             bestValue = minEvalBoard;
-            if(timeLeft){
                 for (int y = 0; y < 8; y++) {
                     for (int x = 0; x < 8; x++) {
                         if (game.calculateValidMoves()[x][y] != 0) {
-                            //                        int ctr = game.flippableCount(x,y);
                             Integer v = calculateMove(tempBoard, player, depth - 1, false);
                             bestValue = max(bestValue, v);
                         }
-                    }
                 }
             }
         } else {
             bestValue = maxEvalBoard;
-            if(timeLeft){
                 for (int y = 0; y < 8; y++) {
                     for (int x = 0; x < 8; x++) {
                         if (game.calculateValidMoves()[x][y] != 0) {
-                            //                        int ctr = game.flippableCount(x, y);
                             int v = calculateMove(tempBoard, player, depth - 1, true);
                             bestValue = min(bestValue, v);
                         }
-                    }
+
                 }
             }
         }
@@ -97,9 +97,9 @@ public class Minimax implements AI, Runnable {
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if (tempboard[y][x] == player) {
-                    if (x == 0 || x == 8 - 1 && y == 0 || y == 8 - 1) {
+                    if (x == 0 || x == 7 && y == 0 || y == 7) {
                         tot += 4;
-                    } else if (x == 0 || x == 8 - 1 || y == 0 || y == 8 - 1) {
+                    } else if (x == 0 || x == 7 || y == 0 || y == 7) {
                         tot += 2;
                     } else {
                         tot += 1;
@@ -107,19 +107,9 @@ public class Minimax implements AI, Runnable {
                 }
             }
         }
-        //System.out.println(tot);
         return tot;
     }
 
-    @Override
-    public void run() {
-        this.timeLeft = true;
-        try {
-            Thread.sleep(3000);
-            this.timeLeft = false;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+
 }
 
