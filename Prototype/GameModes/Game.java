@@ -9,8 +9,10 @@ public interface Game {
     /** Execute the move on behalf of the current player. */
     public boolean move(int coordinate);
 
+    /** Switch the turn between players. */
     public void switchTurns();
 
+    /** Get the amount of valid moves that are left. */
     public boolean validMovesLeft();
 
     /** Check if the specified move is valid */
