@@ -253,6 +253,30 @@ public class Reversi extends AbstractGame {
         return tot;
     }
 
+
+    /** Evaluate the current board's status for the specified player number.
+     *  Returns the amount of colored stones for player #. */
+    public int getScore(int player){
+        int score1 = 0;
+        int score2 = 0;
+        for(int x = 0; x < 8; x++){
+            for(int y = 0; y < 8; y++){
+                if(board[x][y] == 1){
+                    score1 += 1;
+                }
+                if(board[x][y] == 2){
+                    score2 += 1;
+                }
+            }
+        }
+        if(player == 1){
+            return score1;
+        }
+        else{
+            return score2;
+        }
+    }
+
     @Override
     public boolean moveIsValid(int coordinate) {
         return false;

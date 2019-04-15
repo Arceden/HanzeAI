@@ -175,8 +175,8 @@ public class ReversiController implements Observer {
         //Update infoboard
         Reversi r = (Reversi) game;
         Platform.runLater(()->{
-            tBlack.setText(r.evalBoard(1)+"");
-            tWhite.setText(r.evalBoard(2)+"");
+            tBlack.setText(r.getScore(1)+"");
+            tWhite.setText(r.getScore(2)+"");
 
             lPlayer1.setText(game.getPlayer1().getUsername());
             lPlayer2.setText(game.getPlayer2().getUsername());
